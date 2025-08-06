@@ -12,6 +12,8 @@ class ToDo {
       ToDo(id: '03', todoText: 'hellow 03'),
       ToDo(id: '04', todoText: 'hellow 04'),
       ToDo(id: '05', todoText: 'hellow 05'),
+      ToDo(id: '06', todoText: 'hellow 06'),
+      ToDo(id: '07', todoText: 'hellow 07'),
     ];
   }
 }
