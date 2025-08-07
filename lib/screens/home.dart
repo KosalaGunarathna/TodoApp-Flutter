@@ -1,5 +1,7 @@
 // import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:todoapp/color_theam/color.dart';
 import '../widgets/todo_item.dart';
@@ -14,6 +16,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final todoList = ToDo.todoList();
+  final _todoController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -78,8 +81,9 @@ class _HomeState extends State<Home> {
                       ],
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const TextField(
-                      decoration: InputDecoration(
+                    child: TextField(
+                      controller: _todoController,
+                      decoration: const InputDecoration(
                         hintText: 'Add a new todo item',
                         border: InputBorder.none,
                       ),
@@ -92,7 +96,7 @@ class _HomeState extends State<Home> {
                     right: 20,
                   ),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {_addToDoItem(_todoController.text);},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue, // Background color
                       foregroundColor: Colors.white,
@@ -125,6 +129,19 @@ class _HomeState extends State<Home> {
       todoList.removeWhere((item)=> item.id == id);
     });
     
+  }
+
+  void _addToDoItem(String todo) {
+    if (todo.isNotEmpty) {
+      setState(() {
+        todoList.add(ToDo(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          todoText: todo,
+        ));
+        _todoController.clear();
+      });
+      _todoController.clear();
+    }
   }
 
 
