@@ -4,7 +4,10 @@ import 'package:todoapp/model/todo.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
-  const ToDoItem.ToDoItem({Key? key, required this.todo}) : super(key: key);
+  final onToDoChanged;
+  final onDeleteItem;
+
+  const ToDoItem({Key? key, required this.todo,required this.onDeleteItem,required this.onToDoChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +18,8 @@ class ToDoItem extends StatelessWidget {
               left: 20,
             ),
             onTap: () {
-              print("click on todo items");
+              // print("click on todo items");
+              onToDoChanged(todo);
             },
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -24,17 +28,17 @@ class ToDoItem extends StatelessWidget {
 
             // ✅ Checkbox icon
             leading: Icon(
-              todo.isDone ?Icons.check_box : Icons.check_box_outline_blank,
+              todo.isDone ? Icons.check_box : Icons.check_box_outline_blank,
               color: Colors.blue,
             ),
 
             // ✅ text
-            title:  Text(
+            title: Text(
               todo.todoText!,
               style: TextStyle(
                 fontSize: 16,
                 color: tdBlack,
-                decoration:todo.isDone ?TextDecoration.lineThrough: null,
+                decoration: todo.isDone ? TextDecoration.lineThrough : null,
               ),
             ),
 
