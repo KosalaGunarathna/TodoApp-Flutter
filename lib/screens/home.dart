@@ -21,7 +21,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    _foundTodo= todoList;
+    _foundTodo = todoList;
     super.initState();
   }
 
@@ -39,11 +39,12 @@ class _HomeState extends State<Home> {
                 searchBox(),
                 Expanded(
                   child: ListView(
+                    padding: EdgeInsets.only(bottom: 50),
                     children: [
                       Container(
                         margin: EdgeInsets.only(
-                          top: 10,
-                          bottom: 20,
+                          top: 20,
+                          bottom: 10,
                         ),
                         child: const Text(
                           'All ToDos',
@@ -103,7 +104,9 @@ class _HomeState extends State<Home> {
                     right: 20,
                   ),
                   child: ElevatedButton(
-                    onPressed: () {_addToDoItem(_todoController.text);},
+                    onPressed: () {
+                      _addToDoItem(_todoController.text);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue, // Background color
                       foregroundColor: Colors.white,
@@ -126,16 +129,14 @@ class _HomeState extends State<Home> {
 
   void _handleToDoChange(ToDo todo) {
     setState(() {
-       todo.isDone = !todo.isDone;
+      todo.isDone = !todo.isDone;
     });
-   
   }
 
   void _handleDeleteItem(String id) {
     setState(() {
-      todoList.removeWhere((item)=> item.id == id);
+      todoList.removeWhere((item) => item.id == id);
     });
-    
   }
 
   void _searchTodo(String enterKeyword) {
@@ -144,8 +145,8 @@ class _HomeState extends State<Home> {
       results = todoList;
     } else {
       results = todoList
-          .where((item) => item.todoText!.toLowerCase()
-          .contains(enterKeyword.toLowerCase()))
+          .where((item) =>
+              item.todoText!.toLowerCase().contains(enterKeyword.toLowerCase()))
           .toList();
     }
     setState(() {
@@ -166,12 +167,10 @@ class _HomeState extends State<Home> {
     }
   }
 
-
-
   Widget searchBox() {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 1),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
