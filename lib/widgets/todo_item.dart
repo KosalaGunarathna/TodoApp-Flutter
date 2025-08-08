@@ -17,6 +17,7 @@ class ToDoItem extends StatelessWidget {
             contentPadding: const EdgeInsets.only(
               left: 20,
             ),
+            
             onTap: () {
               // print("click on todo items");
               onToDoChanged(todo);

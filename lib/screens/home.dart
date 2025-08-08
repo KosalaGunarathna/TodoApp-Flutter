@@ -4,6 +4,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:todoapp/color_theam/color.dart';
+import 'package:todoapp/screens/AddTodoPage.dart';
 import '../widgets/todo_item.dart';
 import '../model/todo.dart';
 
@@ -72,53 +73,84 @@ class _HomeState extends State<Home> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: Container(
-                    margin:
-                        const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(0.0, 0.0),
-                            blurRadius: 10.0,
-                            spreadRadius: 0.0),
-                      ],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextField(
-                      controller: _todoController,
-                      decoration: const InputDecoration(
-                        hintText: 'Add a new todo item',
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: Container(
+                //     margin:
+                //         const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+                //     padding: EdgeInsets.symmetric(horizontal: 10),
+                //     decoration: BoxDecoration(
+                //       color: Colors.white,
+                //       boxShadow: const [
+                //         BoxShadow(
+                //             color: Colors.grey,
+                //             offset: Offset(0.0, 0.0),
+                //             blurRadius: 10.0,
+                //             spreadRadius: 0.0),
+                //       ],
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     child: TextField(
+                //       controller: _todoController,
+                //       decoration: const InputDecoration(
+                //         hintText: 'Add a new todo item',
+                //         border: InputBorder.none,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
+
+                // Container(
+                //   margin: const EdgeInsets.only(
+                //     bottom: 20,
+                //     right: 20,
+                //   ),
+                //   child: ElevatedButton(
+                //     onPressed: () {
+                //       _addToDoItem(_todoController.text);
+                //     },
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: Colors.blue, // Background color
+                //       foregroundColor: Colors.white,
+                //     ),
+                //     child: const Text(
+                //       '+',
+                //       style: TextStyle(
+                //         fontSize: 20,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
                 Container(
-                  margin: const EdgeInsets.only(
-                    bottom: 20,
-                    right: 20,
+                // margin: const EdgeInsets.only(bottom: 20, right: 20),
+                padding: const EdgeInsets.all(20),
+                child: ElevatedButton(
+                  onPressed: ()  {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddTodoPage()),
+                    ).then((value) {
+                      if (value != null && value is String) {
+                        _addToDoItem(value);
+                      }
+                    });
+
+                  
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
                   ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _addToDoItem(_todoController.text);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // Background color
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      '+',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
+                  child: const Text(
+                    '+',
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
+              ),
+
               ],
             ),
           ),
