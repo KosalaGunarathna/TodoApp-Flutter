@@ -43,7 +43,7 @@ class _HomeState extends State<Home> {
                     padding: EdgeInsets.only(bottom: 50),
                     children: [
                       Container(
-                        margin: EdgeInsets.only(
+                        margin: const EdgeInsets.only(
                           top: 20,
                           bottom: 10,
                         ),
@@ -60,6 +60,7 @@ class _HomeState extends State<Home> {
                           todo: todoo,
                           onToDoChanged: _handleToDoChange,
                           onDeleteItem: _handleDeleteItem,
+                          onUpdateItem: _updateTodoItem,
                         ),
                     ],
                   ),
@@ -186,6 +187,16 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void _updateTodoItem(String updatedText, String id) {
+  setState(() {
+    final index = todoList.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      todoList[index].todoText = updatedText;
+    }
+  });
+}
+
+
   void _addToDoItem(String todo) {
     if (todo.isNotEmpty) {
       setState(() {
@@ -198,6 +209,9 @@ class _HomeState extends State<Home> {
       _todoController.clear();
     }
   }
+
+
+
 
   Widget searchBox() {
     return Container(

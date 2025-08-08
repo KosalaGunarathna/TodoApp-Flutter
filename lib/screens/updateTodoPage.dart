@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 
-class AddTodoPage extends StatefulWidget {
+class UpdateTodoPage extends StatefulWidget {
+  final String currentText;
+
+  const UpdateTodoPage({Key? key, required this.currentText}) : super(key: key);
+
   @override
-  State<AddTodoPage> createState() => _AddTodoPageState();
+  State<UpdateTodoPage> createState() => _UpdateTodoPageState();
 }
 
-class _AddTodoPageState extends State<AddTodoPage> {
-  final TextEditingController _controller = TextEditingController();
+class _UpdateTodoPageState extends State<UpdateTodoPage> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentText);
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add New Todo')),
+      appBar: AppBar(title: Text('Update Todo')),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -19,20 +31,18 @@ class _AddTodoPageState extends State<AddTodoPage> {
             TextFormField(
               controller: _controller,
               decoration: const InputDecoration(
-                hintText: 'Enter new todo',
+                hintText: ' new todo',
                 border: UnderlineInputBorder(),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue),
                 ),
               ),
-
               keyboardType: TextInputType.multiline,
               maxLines: null,
-
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
+               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue, // background color
                 foregroundColor: Colors.white, // text color
               ),
@@ -41,7 +51,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   Navigator.pop(context, _controller.text); // return value
                 }
               },
-              child: Text('Add Todo'),
+              child: Text('Update Todo'),
             ),
           ],
         ),
