@@ -7,6 +7,7 @@ class AddTodoPage extends StatefulWidget {
 
 class _AddTodoPageState extends State<AddTodoPage> {
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _notecontroller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +28,20 @@ class _AddTodoPageState extends State<AddTodoPage> {
               ),
 
               keyboardType: TextInputType.multiline,
-              maxLines: null,
-
+              // maxLines: 2,
+            ),
+            SizedBox(height: 20),
+            TextFormField(
+              controller: _notecontroller,
+              decoration: const InputDecoration(
+                hintText: 'Add note',
+                border: UnderlineInputBorder(),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              keyboardType: TextInputType.multiline,
+              // maxLines: 2,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -38,7 +51,11 @@ class _AddTodoPageState extends State<AddTodoPage> {
               ),
               onPressed: () {
                 if (_controller.text.isNotEmpty) {
-                  Navigator.pop(context, _controller.text); // return value
+                  Navigator.pop(context, {
+                    'todoText': _controller.text,
+                    'todoNote':_notecontroller.text,
+                    }); // return value
+                  
                 }
               },
               child: Text('Add Todo'),

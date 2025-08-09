@@ -1,7 +1,3 @@
-// import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
-
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/screens/AddTodoPage.dart';
@@ -44,7 +40,7 @@ class _HomeState extends State<Home> {
                     children: [
                       Container(
                         margin: const EdgeInsets.only(
-                          top: 20,
+                          top: 10,
                           bottom: 10,
                         ),
                         child: const Text(
@@ -102,7 +98,6 @@ class _HomeState extends State<Home> {
                 //   ),
                 // ),
 
-
                 // Container(
                 //   margin: const EdgeInsets.only(
                 //     bottom: 20,
@@ -126,32 +121,34 @@ class _HomeState extends State<Home> {
                 // ),
 
                 Container(
-                // margin: const EdgeInsets.only(bottom: 20, right: 20),
-                padding: const EdgeInsets.all(20),
-                child: ElevatedButton(
-                  onPressed: ()  {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddTodoPage()),
-                    ).then((value) {
-                      if (value != null && value is String) {
-                        _addToDoItem(value);
-                      }
-                    });
+                  // margin: const EdgeInsets.only(bottom: 20, right: 20),
+                  padding: const EdgeInsets.all(20),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddTodoPage()),
+                      ).then((value) {
+                          print(value); // This will print the whole map
 
-                  
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    '+',
-                    style: TextStyle(fontSize: 20),
+                          if (value != null && value is Map) {
+                            print(value['todoText']); // prints main text
+                            print(value['todoNote']); // prints note
+
+                            _addToDoItem(value['todoText'], value['todoNote']);
+                          }
+                        });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text(
+                      '+',
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
                 ),
-              ),
-
               ],
             ),
           ),
@@ -188,30 +185,28 @@ class _HomeState extends State<Home> {
   }
 
   void _updateTodoItem(String updatedText, String id) {
-  setState(() {
-    final index = todoList.indexWhere((item) => item.id == id);
-    if (index != -1) {
-      todoList[index].todoText = updatedText;
-    }
-  });
-}
+    setState(() {
+      final index = todoList.indexWhere((item) => item.id == id);
+      if (index != -1) {
+        todoList[index].todoText = updatedText;
+      }
+    });
+  }
 
-
-  void _addToDoItem(String todo) {
+  void _addToDoItem(String todo,String todoNote) {
     if (todo.isNotEmpty) {
       setState(() {
         todoList.add(ToDo(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           todoText: todo,
+          todoNote: todoNote, // You can add a note here if needed
+          // You can add a note here if neededh
         ));
         _todoController.clear();
       });
       _todoController.clear();
     }
   }
-
-
-
 
   Widget searchBox() {
     return Container(
@@ -220,6 +215,15 @@ class _HomeState extends State<Home> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color:
+                Colors.grey.withOpacity(0.5), // shadow color with transparency
+            spreadRadius: 2, // shadow size expansion
+            blurRadius: 7, // blur effect
+            offset: Offset(0, 3), // shadow position (x, y)
+          ),
+        ],
       ),
       child: Row(
         children: [
