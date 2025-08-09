@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         statusBarColor: Colors.transparent, // Make status bar transparent
       ),
     );
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Todo App',
       home: Home(),
     );

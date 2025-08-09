@@ -1,40 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/model/todo.dart';
+import 'package:custom_check_box/custom_check_box.dart';
+import 'package:todoapp/screens/UpdateTodoPage.dart';
+import 'package:date_field/date_field.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
   final onToDoChanged;
   final onDeleteItem;
+  final onUpdateItem;
 
-  const ToDoItem({Key? key, required this.todo,required this.onDeleteItem,required this.onToDoChanged}) : super(key: key);
+
+  const ToDoItem({
+    super.key,
+    required this.todo,
+    required this.onDeleteItem,
+    required this.onToDoChanged,
+    required this.onUpdateItem,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(bottom: 15),
-        child: ListTile(
-            contentPadding: const EdgeInsets.only(
-              left: 20,
-            ),
-            onTap: () {
-              // print("click on todo items");
-              onToDoChanged(todo);
-            },
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            tileColor: Colors.white,
+      margin: const EdgeInsets.only(bottom: 15),
+      child: ListTile(
+        contentPadding: const EdgeInsets.only(
+          left: 5,
+        ),
 
-            // ✅ Checkbox icon
-            leading: Icon(
-              todo.isDone ? Icons.check_box : Icons.check_box_outline_blank,
-              color: Colors.blue,
+        onTap: () {
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    UpdateTodoPage(
+                      currentText: todo.todoText!,
+                      currentNote: todo.todoNote ,
+                      currentDate: todo.date,
+                      currentTime: todo.time,
+                      
+                      ),
+                    ),
+                     
+                    
+          ).then((updatedText) {
+            if (updatedText['todoText'] != null && updatedText is Map) {
+              onUpdateItem(
+              updatedText['todoText'],
+              updatedText['todoNote'],
+              updatedText['date'],
+              updatedText['time'],
+              todo.id,
+              );
               
-            ),
+            }
+          });
+        },
 
-            // ✅ text
-            title: Text(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        tileColor: Colors.white,
+
+        // ✅ Checkbox icon
+        leading: CustomCheckBox(
+          value: todo.isDone,
+          checkedFillColor: Colors.blue,
+          checkBoxSize: 15,
+          borderRadius: 3,
+          onChanged: (val) {
+            onToDoChanged(todo);
+          },
+        ),
+
+     
+
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
               todo.todoText!,
               style: TextStyle(
                 fontSize: 16,
@@ -42,14 +88,57 @@ class ToDoItem extends StatelessWidget {
                 decoration: todo.isDone ? TextDecoration.lineThrough : null,
               ),
             ),
+            const SizedBox(height: 5),
+            
+            // Text(
+            todo.todoNote == null || todo.todoNote!.isEmpty
+            ? const SizedBox.shrink()
+            : Text(
+                todo.todoNote!,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: tdGrey,
+                ),
+              ),
 
-            /// ✅ delet button
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: tdRed),
-              onPressed: () {
-                // print('click delet button');
-                onDeleteItem(todo.id);
-              },
-            )));
+
+          ],
+        ),
+
+        // ✅ time
+
+        subtitle: Align(
+          alignment: Alignment.centerRight,
+          child: Column(
+            children: [
+              todo.time == null
+                ? const SizedBox.shrink() // hides the widget, takes no space
+                : Text(
+                    todo.time!.format(context),
+                    style: const TextStyle(fontSize: 10, color: tdGrey),
+                  ),
+
+              const SizedBox(height: 2),
+
+         // ✅ date
+              todo.date == null? const SizedBox.shrink():
+              Text(
+              '${todo.date!.year}-${todo.date!.month.toString().padLeft(2, '0')}-${todo.date!.day.toString().padLeft(2, '0')}',
+                style: const TextStyle(fontSize: 10, color:tdGrey),
+              )
+            ],
+          ),
+        ),
+
+        // ✅ delet button
+        trailing: IconButton(
+          icon: const Icon(Icons.delete, color: tdRed),
+          onPressed: () {
+            // print('click delet button');
+            onDeleteItem(todo.id);
+          },
+        ),
+      ),
+    );
   }
 }

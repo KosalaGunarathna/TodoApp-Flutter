@@ -1,14 +1,11 @@
-// import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
-
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:todoapp/color_theam/color.dart';
+import 'package:todoapp/screens/AddTodoPage.dart';
 import '../widgets/todo_item.dart';
 import '../model/todo.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -33,17 +30,17 @@ class _HomeState extends State<Home> {
       body: Stack(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             child: Column(
               children: [
                 searchBox(),
                 Expanded(
                   child: ListView(
-                    padding: EdgeInsets.only(bottom: 50),
+                    padding: const EdgeInsets.only(bottom: 50),
                     children: [
                       Container(
-                        margin: EdgeInsets.only(
-                          top: 20,
+                        margin: const EdgeInsets.only(
+                          top: 10,
                           bottom: 10,
                         ),
                         child: const Text(
@@ -59,6 +56,7 @@ class _HomeState extends State<Home> {
                           todo: todoo,
                           onToDoChanged: _handleToDoChange,
                           onDeleteItem: _handleDeleteItem,
+                          onUpdateItem: _updateTodoItem,
                         ),
                     ],
                   ),
@@ -72,50 +70,80 @@ class _HomeState extends State<Home> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: Container(
-                    margin:
-                        const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(0.0, 0.0),
-                            blurRadius: 10.0,
-                            spreadRadius: 0.0),
-                      ],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextField(
-                      controller: _todoController,
-                      decoration: const InputDecoration(
-                        hintText: 'Add a new todo item',
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: Container(
+                //     margin:
+                //         const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+                //     padding: EdgeInsets.symmetric(horizontal: 10),
+                //     decoration: BoxDecoration(
+                //       color: Colors.white,
+                //       boxShadow: const [
+                //         BoxShadow(
+                //             color: Colors.grey,
+                //             offset: Offset(0.0, 0.0),
+                //             blurRadius: 10.0,
+                //             spreadRadius: 0.0),
+                //       ],
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     child: TextField(
+                //       controller: _todoController,
+                //       decoration: const InputDecoration(
+                //         hintText: 'Add a new todo item',
+                //         border: InputBorder.none,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
+                // Container(
+                //   margin: const EdgeInsets.only(
+                //     bottom: 20,
+                //     right: 20,
+                //   ),
+                //   child: ElevatedButton(
+                //     onPressed: () {
+                //       _addToDoItem(_todoController.text);
+                //     },
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: Colors.blue, // Background color
+                //       foregroundColor: Colors.white,
+                //     ),
+                //     child: const Text(
+                //       '+',
+                //       style: TextStyle(
+                //         fontSize: 20,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
                 Container(
-                  margin: const EdgeInsets.only(
-                    bottom: 20,
-                    right: 20,
-                  ),
+                  // margin: const EdgeInsets.only(bottom: 20, right: 20),
+                  padding: const EdgeInsets.all(20),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addToDoItem(_todoController.text);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AddTodoPage()),
+                      ).then((value) {
+                          print(value); // This will print the whole map
+
+                          if (value != null && value is Map) {
+
+                            _addToDoItem(value['todoText'], value['todoNote']);
+                          }
+                        });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // Background color
+                      backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                     ),
                     child: const Text(
                       '+',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
                 ),
@@ -154,12 +182,27 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _addToDoItem(String todo) {
+  void _updateTodoItem(String updatedText,String updateNote,DateTime? updateDate,TimeOfDay? updateTime,String id) {
+    setState(() {
+      final index = todoList.indexWhere((item) => item.id == id);
+      if (index != -1) {
+        todoList[index].todoText = updatedText;
+        todoList[index].todoNote = updateNote; 
+        todoList[index].date = updateDate; // Update date if needed
+        todoList[index].time = updateTime; // Update time if needed
+      }
+    });
+  }
+
+  void _addToDoItem(String todo,String todoNote) {
     if (todo.isNotEmpty) {
       setState(() {
         todoList.add(ToDo(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           todoText: todo,
+          todoNote: todoNote, // You can add a note here if needed
+          date: DateTime.now(), // Add current date
+          time: TimeOfDay.now(), // Add current time
         ));
         _todoController.clear();
       });
@@ -169,11 +212,20 @@ class _HomeState extends State<Home> {
 
   Widget searchBox() {
     return Container(
-      margin: EdgeInsets.only(top: 10, bottom: 20),
+      margin: const EdgeInsets.only(top: 10, bottom: 20),
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 1),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color:
+                Colors.grey.withOpacity(0.5), // shadow color with transparency
+            spreadRadius: 2, // shadow size expansion
+            blurRadius: 7, // blur effect
+            offset: const Offset(0, 3), // shadow position (x, y)
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -214,7 +266,7 @@ class _HomeState extends State<Home> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Container(
+          SizedBox(
             height: 20,
             width: 20,
             child: ClipRRect(
