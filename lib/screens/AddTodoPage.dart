@@ -31,6 +31,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
               // maxLines: 2,
             ),
             SizedBox(height: 20),
+
+            //todo note
             TextFormField(
               controller: _notecontroller,
               decoration: const InputDecoration(

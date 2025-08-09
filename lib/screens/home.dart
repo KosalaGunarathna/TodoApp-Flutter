@@ -132,8 +132,6 @@ class _HomeState extends State<Home> {
                           print(value); // This will print the whole map
 
                           if (value != null && value is Map) {
-                            print(value['todoText']); // prints main text
-                            print(value['todoNote']); // prints note
 
                             _addToDoItem(value['todoText'], value['todoNote']);
                           }
@@ -184,11 +182,12 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _updateTodoItem(String updatedText, String id) {
+  void _updateTodoItem(String updatedText,String updateNote, String id) {
     setState(() {
       final index = todoList.indexWhere((item) => item.id == id);
       if (index != -1) {
         todoList[index].todoText = updatedText;
+        todoList[index].todoNote = updateNote; 
       }
     });
   }

@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 class UpdateTodoPage extends StatefulWidget {
   final String currentText;
+  final String? currentNote;
 
-  const UpdateTodoPage({Key? key, required this.currentText}) : super(key: key);
+  UpdateTodoPage({
+    Key? key,
+    required this.currentText,
+    required this.currentNote,
+  }) : super(key: key);
 
   @override
   State<UpdateTodoPage> createState() => _UpdateTodoPageState();
@@ -11,14 +16,21 @@ class UpdateTodoPage extends StatefulWidget {
 
 class _UpdateTodoPageState extends State<UpdateTodoPage> {
   late TextEditingController _controller;
+  late TextEditingController _noteController;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.currentText);
+    _noteController = TextEditingController(text: widget.currentNote ?? '');
   }
 
-
+//   @override
+//   void dispose() {
+//   _controller.dispose();
+//   _noteController.dispose();
+//   super.dispose();
+// }
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +52,34 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
               keyboardType: TextInputType.multiline,
               maxLines: null,
             ),
+
+            //todo note
+            TextFormField(
+              controller: _noteController,
+              decoration: const InputDecoration(
+                hintText: 'Add note',
+                border: UnderlineInputBorder(),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              keyboardType: TextInputType.multiline,
+              // maxLines: 2,
+            ),
+
             const SizedBox(height: 20),
+
             ElevatedButton(
-               style: ElevatedButton.styleFrom(
+              style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue, // background color
                 foregroundColor: Colors.white, // text color
               ),
               onPressed: () {
                 if (_controller.text.isNotEmpty) {
-                  Navigator.pop(context, _controller.text); // return value
+                  Navigator.pop(context, {
+                    'todoText' : _controller.text,
+                    'todoNote': _noteController.text,
+                    }); // return value
                 }
               },
               child: Text('Update Todo'),

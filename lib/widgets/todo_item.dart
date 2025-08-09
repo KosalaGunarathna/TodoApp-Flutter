@@ -34,10 +34,15 @@ class ToDoItem extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    UpdateTodoPage(currentText: todo.todoText!)),
+                    UpdateTodoPage(
+                      currentText: todo.todoText!,
+                      currentNote: todo.todoNote ?? '' ,
+                      ),
+                      ),
           ).then((updatedText) {
-            if (updatedText != null && updatedText is String) {
-              onUpdateItem(updatedText, todo.id);
+            if (updatedText['todoText'] != null && updatedText is Map) {
+              onUpdateItem(updatedText['todoText'],updatedText['todoNote'],todo.id);
+              
             }
           });
         },
