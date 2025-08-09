@@ -5,7 +5,7 @@ import '../widgets/todo_item.dart';
 import '../model/todo.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -30,13 +30,13 @@ class _HomeState extends State<Home> {
       body: Stack(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             child: Column(
               children: [
                 searchBox(),
                 Expanded(
                   child: ListView(
-                    padding: EdgeInsets.only(bottom: 50),
+                    padding: const EdgeInsets.only(bottom: 50),
                     children: [
                       Container(
                         margin: const EdgeInsets.only(
@@ -127,7 +127,7 @@ class _HomeState extends State<Home> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AddTodoPage()),
+                        MaterialPageRoute(builder: (context) => const AddTodoPage()),
                       ).then((value) {
                           print(value); // This will print the whole map
 
@@ -182,12 +182,14 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _updateTodoItem(String updatedText,String updateNote, String id) {
+  void _updateTodoItem(String updatedText,String updateNote,DateTime? updateDate,TimeOfDay? updateTime,String id) {
     setState(() {
       final index = todoList.indexWhere((item) => item.id == id);
       if (index != -1) {
         todoList[index].todoText = updatedText;
         todoList[index].todoNote = updateNote; 
+        todoList[index].date = updateDate; // Update date if needed
+        todoList[index].time = updateTime; // Update time if needed
       }
     });
   }
@@ -199,7 +201,8 @@ class _HomeState extends State<Home> {
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           todoText: todo,
           todoNote: todoNote, // You can add a note here if needed
-          // You can add a note here if neededh
+          date: DateTime.now(), // Add current date
+          time: TimeOfDay.now(), // Add current time
         ));
         _todoController.clear();
       });
@@ -209,7 +212,7 @@ class _HomeState extends State<Home> {
 
   Widget searchBox() {
     return Container(
-      margin: EdgeInsets.only(top: 10, bottom: 20),
+      margin: const EdgeInsets.only(top: 10, bottom: 20),
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 1),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -220,7 +223,7 @@ class _HomeState extends State<Home> {
                 Colors.grey.withOpacity(0.5), // shadow color with transparency
             spreadRadius: 2, // shadow size expansion
             blurRadius: 7, // blur effect
-            offset: Offset(0, 3), // shadow position (x, y)
+            offset: const Offset(0, 3), // shadow position (x, y)
           ),
         ],
       ),
@@ -263,7 +266,7 @@ class _HomeState extends State<Home> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Container(
+          SizedBox(
             height: 20,
             width: 20,
             child: ClipRRect(

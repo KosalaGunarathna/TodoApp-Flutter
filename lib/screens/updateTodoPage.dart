@@ -4,12 +4,16 @@ import 'package:date_field/date_field.dart';
 class UpdateTodoPage extends StatefulWidget {
   final String currentText;
   final String? currentNote;
+  final DateTime? currentDate; // Initialize selected date to null
+  final TimeOfDay? currentTime;
 
-  UpdateTodoPage({
-    Key? key,
+  const UpdateTodoPage({
+    super.key,
     required this.currentText,
-    required this.currentNote,
-  }) : super(key: key);
+    this.currentNote,
+    this.currentDate,
+    this.currentTime,
+  });
 
   @override
   State<UpdateTodoPage> createState() => _UpdateTodoPageState();
@@ -18,19 +22,25 @@ class UpdateTodoPage extends StatefulWidget {
 class _UpdateTodoPageState extends State<UpdateTodoPage> {
   late TextEditingController _controller;
   late TextEditingController _noteController;
+  late DateTime? _date; // Initialize selected date to null
+  late TimeOfDay? _time;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.currentText);
     _noteController = TextEditingController(text: widget.currentNote ?? '');
+    _date = widget.currentDate;
+    _time = widget.currentTime; // Default to current date
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Update Todo')),
+      appBar: AppBar(title: const Text('Update Todo',
+      style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,),
+      textAlign: TextAlign.center,
+      ),),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -38,7 +48,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
             TextFormField(
               controller: _controller,
               decoration: const InputDecoration(
-                hintText: ' new todo',
+                hintText: 'Enter New Todo',
+                hintStyle: TextStyle(fontWeight: FontWeight.normal),
                 border: UnderlineInputBorder(),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue),
@@ -48,11 +59,14 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
               maxLines: null,
             ),
 
+            SizedBox(height: 20),
+
             //todo note
             TextFormField(
               controller: _noteController,
               decoration: const InputDecoration(
-                hintText: 'Add note',
+                hintText: 'Add Note',
+                hintStyle: TextStyle(fontWeight: FontWeight.normal),
                 border: UnderlineInputBorder(),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue),
@@ -65,6 +79,7 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
             const SizedBox(height: 20),
 
             DateTimeFormField(
+              initialValue: _date,
               decoration: const InputDecoration(
                 labelText: 'Select Date',
                 border: UnderlineInputBorder(),
@@ -74,14 +89,32 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
               ),
               mode: DateTimeFieldPickerMode.date, // Only date
               onChanged: (DateTime? value) {
-                print('Selected Date: $value');
+                setState(() {
+                  if (value != null) {
+                    _date = value != null
+                        ? DateTime(value.year, value.month, value.day)
+                        : null;
+                  } else {
+                    _date = null; // Reset date if value is null
+                  }
+                  print('Selected Date: $_date');
+                });
               },
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Time Picker
             DateTimeFormField(
+              initialValue: _time != null
+                  ? DateTime(
+                      DateTime.now().year,
+                      DateTime.now().month,
+                      DateTime.now().day,
+                      _time!.hour,
+                      _time!.minute,
+                    )
+                  : null,
               decoration: const InputDecoration(
                 labelText: 'Select Time',
                 border: UnderlineInputBorder(),
@@ -91,9 +124,20 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
               ),
               mode: DateTimeFieldPickerMode.time, // Only time
               onChanged: (DateTime? value) {
-                print('Selected Time: $value');
+                setState(() {
+                  if (value != null) {
+                    _time = value != null
+                        ? TimeOfDay(hour: value.hour, minute: value.minute)
+                        : null;
+                  } else {
+                    _time = null; // Reset time if value is null
+                  }
+                  print('Selected Time: $_time');
+                });
               },
             ),
+
+            SizedBox(height: 20),
 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -102,13 +146,17 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
               ),
               onPressed: () {
                 if (_controller.text.isNotEmpty) {
+                  print("date : $_date");
+                  print("Time : $_time");
                   Navigator.pop(context, {
-                    'todoText' : _controller.text,
+                    'todoText': _controller.text,
                     'todoNote': _noteController.text,
-                    }); // return value
+                    'date': _date,
+                    'time': _time,
+                  }); // return value
                 }
               },
-              child: Text('Update Todo'),
+              child: const Text('Update Todo'),
             ),
           ],
         ),

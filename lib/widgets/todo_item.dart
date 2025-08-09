@@ -3,6 +3,7 @@ import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/model/todo.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:todoapp/screens/UpdateTodoPage.dart';
+import 'package:date_field/date_field.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
@@ -12,24 +13,24 @@ class ToDoItem extends StatelessWidget {
 
 
   const ToDoItem({
-    Key? key,
+    super.key,
     required this.todo,
     required this.onDeleteItem,
     required this.onToDoChanged,
     required this.onUpdateItem,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 15),
+      margin: const EdgeInsets.only(bottom: 15),
       child: ListTile(
         contentPadding: const EdgeInsets.only(
           left: 5,
         ),
 
         onTap: () {
-          // print("click on todo items");
+
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -37,11 +38,22 @@ class ToDoItem extends StatelessWidget {
                     UpdateTodoPage(
                       currentText: todo.todoText!,
                       currentNote: todo.todoNote ,
+                      currentDate: todo.date,
+                      currentTime: todo.time,
+                      
                       ),
-                      ),
+                    ),
+                     
+                    
           ).then((updatedText) {
             if (updatedText['todoText'] != null && updatedText is Map) {
-              onUpdateItem(updatedText['todoText'],updatedText['todoNote'],todo.id);
+              onUpdateItem(
+              updatedText['todoText'],
+              updatedText['todoNote'],
+              updatedText['date'],
+              updatedText['time'],
+              todo.id,
+              );
               
             }
           });
@@ -63,15 +75,7 @@ class ToDoItem extends StatelessWidget {
           },
         ),
 
-        // ✅ text
-        // title: Text(
-        //   todo.todoText!,
-        //   style: TextStyle(
-        //     fontSize: 16,
-        //     color: tdBlack,
-        //     decoration: todo.isDone ? TextDecoration.lineThrough : null,
-        //   ),
-        // ),
+     
 
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,28 +89,42 @@ class ToDoItem extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            Text(
-              // 'Extra text for information',
-              todo.todoNote ?? '',
-
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
+            
+            // Text(
+            todo.todoNote == null || todo.todoNote!.isEmpty
+            ? const SizedBox.shrink()
+            : Text(
+                todo.todoNote!,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: tdGrey,
+                ),
               ),
-            ),
+
+
           ],
         ),
 
-        subtitle: const Align(
+        // ✅ time
+
+        subtitle: Align(
           alignment: Alignment.centerRight,
           child: Column(
             children: [
-              Text("11.44 PM",
-                  style: TextStyle(fontSize: 8, color: Colors.grey)),
+              todo.time == null
+                ? const SizedBox.shrink() // hides the widget, takes no space
+                : Text(
+                    todo.time!.format(context),
+                    style: const TextStyle(fontSize: 10, color: tdGrey),
+                  ),
+
               const SizedBox(height: 2),
-              const Text(
-                "Fri,Oct 10,2025",
-                style: TextStyle(fontSize: 8, color: Colors.grey),
+
+         // ✅ date
+              todo.date == null? const SizedBox.shrink():
+              Text(
+              '${todo.date!.year}-${todo.date!.month.toString().padLeft(2, '0')}-${todo.date!.day.toString().padLeft(2, '0')}',
+                style: const TextStyle(fontSize: 10, color:tdGrey),
               )
             ],
           ),
