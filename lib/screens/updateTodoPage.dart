@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:date_field/date_field.dart';
 
 class UpdateTodoPage extends StatefulWidget {
   final String currentText;
@@ -25,12 +26,6 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
     _noteController = TextEditingController(text: widget.currentNote ?? '');
   }
 
-//   @override
-//   void dispose() {
-//   _controller.dispose();
-//   _noteController.dispose();
-//   super.dispose();
-// }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +63,37 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
             ),
 
             const SizedBox(height: 20),
+
+            DateTimeFormField(
+              decoration: const InputDecoration(
+                labelText: 'Select Date',
+                border: UnderlineInputBorder(),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              mode: DateTimeFieldPickerMode.date, // Only date
+              onChanged: (DateTime? value) {
+                print('Selected Date: $value');
+              },
+            ),
+
+            SizedBox(height: 20),
+
+            // Time Picker
+            DateTimeFormField(
+              decoration: const InputDecoration(
+                labelText: 'Select Time',
+                border: UnderlineInputBorder(),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              mode: DateTimeFieldPickerMode.time, // Only time
+              onChanged: (DateTime? value) {
+                print('Selected Time: $value');
+              },
+            ),
 
             ElevatedButton(
               style: ElevatedButton.styleFrom(

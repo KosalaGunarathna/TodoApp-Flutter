@@ -5,12 +5,15 @@ class ToDo {
   String? todoText;
   bool isDone;
   String? todoNote;
+  
+  
 
   ToDo({
     required this.id,
     required this.todoText,
     this.isDone = false,
     this.todoNote='',
+    
     
   });
 

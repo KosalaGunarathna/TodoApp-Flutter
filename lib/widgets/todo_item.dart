@@ -36,7 +36,7 @@ class ToDoItem extends StatelessWidget {
                 builder: (context) =>
                     UpdateTodoPage(
                       currentText: todo.todoText!,
-                      currentNote: todo.todoNote ?? '' ,
+                      currentNote: todo.todoNote ,
                       ),
                       ),
           ).then((updatedText) {
