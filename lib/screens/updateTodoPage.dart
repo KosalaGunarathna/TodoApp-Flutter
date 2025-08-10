@@ -182,6 +182,26 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                     ),
                   ),
                   onPressed: () {
+                      if (_controller.text.isEmpty) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Required",style: TextStyle(fontSize: 20)  ),
+                        content: const Text("Please enter a Todo Item."),
+                        actions: [
+                          TextButton(
+                            child: const Text("OK"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+
                     if (_controller.text.isNotEmpty) {
                       print("date : $_date");
                       print("Time : $_time");

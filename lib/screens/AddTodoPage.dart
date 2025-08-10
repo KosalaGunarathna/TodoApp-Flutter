@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
+import 'package:todoapp/screens/home.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -105,14 +106,66 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
             const SizedBox(height: 20),
 
-            ElevatedButton(
+          
+            Container(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // background color
+                    foregroundColor: Colors.white, // text color
+                    // padding: const EdgeInsets.symmetric(horizontal: 12, vertical:-5 ),
+                    fixedSize: Size(100, 5),
+                    textStyle: const TextStyle(fontSize: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Home(),
+                        ));
+                  },
+                  child: Text('Cancel'),
+                ),
+
+                ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue, // background color
                 foregroundColor: Colors.white, // text color
+                fixedSize: Size(125, 5),
+                    textStyle: const TextStyle(fontSize: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
               ),
               onPressed: () {
-                print("time: $_time");
-                print("date :$_date");
+                // print("time: $_time");
+                // print("date :$_date");
+
+                if (_controller.text.isEmpty) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Required",style: TextStyle(fontSize: 20)  ),
+                        content: const Text("Please enter a Todo Item."),
+                        actions: [
+                          TextButton(
+                            child: const Text("OK"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+                
                 if (_controller.text.isNotEmpty) {
                   Navigator.pop(context, {
                     'todoText': _controller.text,
@@ -123,7 +176,13 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 }
               },
               child: const Text('Add Todo'),
-            ),
+              ),
+                
+              ],
+            )),
+
+              
+
           ],
         ),
       ),

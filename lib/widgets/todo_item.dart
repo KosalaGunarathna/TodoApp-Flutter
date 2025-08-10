@@ -3,7 +3,6 @@ import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/model/todo.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:todoapp/screens/UpdateTodoPage.dart';
-import 'package:date_field/date_field.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
@@ -65,6 +64,7 @@ class ToDoItem extends StatelessWidget {
           borderRadius: 3,
           onChanged: (val) {
             onToDoChanged(todo);
+            
           },
         ),
 
@@ -86,9 +86,10 @@ class ToDoItem extends StatelessWidget {
                 ? const SizedBox.shrink()
                 : Text(
                     todo.todoNote!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: tdGrey,
+                      decoration: todo.isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
           ],
@@ -104,7 +105,11 @@ class ToDoItem extends StatelessWidget {
                   ? const SizedBox.shrink() // hides the widget, takes no space
                   : Text(
                       todo.time!.format(context),
-                      style: const TextStyle(fontSize: 10, color: tdGrey),
+                      style: TextStyle(
+                        fontSize: 10, color: tdGrey,
+                        decoration: todo.isDone ? TextDecoration.lineThrough : null,
+                        ),
+
                     ),
 
               const SizedBox(height: 2),
@@ -114,7 +119,10 @@ class ToDoItem extends StatelessWidget {
                   ? const SizedBox.shrink()
                   : Text(
                       '${todo.date!.year}-${todo.date!.month.toString().padLeft(2, '0')}-${todo.date!.day.toString().padLeft(2, '0')}',
-                      style: const TextStyle(fontSize: 10, color: tdGrey),
+                      style: TextStyle(
+                        fontSize: 10, color: tdGrey,
+                        decoration: todo.isDone ? TextDecoration.lineThrough : null,
+                        ),
                     )
             ],
           ),

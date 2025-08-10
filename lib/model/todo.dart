@@ -19,17 +19,33 @@ class ToDo {
 
   static List<ToDo> todoList() {
     return [
-      ToDo(id: '02', todoText: 'hellow 02', isDone: true),
-      ToDo(id: '03', todoText: 'hellow 03'),
-      ToDo(id: '04', todoText: 'hellow 04'),
-      ToDo(id: '05', todoText: 'hellow 05'),
       ToDo(
-          id: '06',
-          todoText: 'hellow 06',
-          todoNote: 'This is a note for todo 06',
-          date : DateTime(2020,10,05),
-          time: const TimeOfDay(hour: 10, minute: 30),
-      ),
+    id: '1',
+    todoText: 'Buy groceries',
+    todoNote: 'Need to buy milk, eggs, and bread.',
+    date: DateTime(2025, 8, 11),
+    time: const TimeOfDay(hour: 10, minute: 30),
+  ),
+  ToDo(
+    id: '2',
+    todoText: 'Call plumber',
+    todoNote: 'Fix kitchen sink leakage.',
+    date: DateTime(2025, 8, 12),
+    time: const TimeOfDay(hour: 15, minute: 0),
+  ),
+  ToDo(
+    id: '3',
+    todoText: 'Finish Flutter project',
+    todoNote: 'Add Hive database support for local storage.',
+    
+  ),
+  ToDo(
+    id: '4',
+    todoText: 'Go for evening run',
+    todoNote: '5 km in the park.',
+    date: DateTime(2025, 8, 14),
+    time: const TimeOfDay(hour: 18, minute: 30),
+  ),
     ];
   }
 }
