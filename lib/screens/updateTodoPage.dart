@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
+import 'package:todoapp/screens/home.dart';
 
 class UpdateTodoPage extends StatefulWidget {
   final String currentText;
@@ -37,10 +38,16 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Update Todo',
-      style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,),
-      textAlign: TextAlign.center,
-      ),),
+      appBar: AppBar(
+        title: const Text(
+          'Update Todo',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -139,25 +146,57 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
 
             SizedBox(height: 20),
 
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, // background color
-                foregroundColor: Colors.white, // text color
-              ),
-              onPressed: () {
-                if (_controller.text.isNotEmpty) {
-                  print("date : $_date");
-                  print("Time : $_time");
-                  Navigator.pop(context, {
-                    'todoText': _controller.text,
-                    'todoNote': _noteController.text,
-                    'date': _date,
-                    'time': _time,
-                  }); // return value
-                }
-              },
-              child: const Text('Update Todo'),
-            ),
+            Container(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // background color
+                    foregroundColor: Colors.white, // text color
+                    // padding: const EdgeInsets.symmetric(horizontal: 12, vertical:-5 ),
+                    fixedSize: Size(100, 5),
+                    textStyle: const TextStyle(fontSize: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Home(),
+                        ));
+                  },
+                  child: Text('Cancel'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // background color
+                    foregroundColor: Colors.white, // text color
+                    // fixedSize:Size(width, height),
+                    // padding: const EdgeInsets.symmetric(horizontal: 12, vertical:-5 ),
+                    textStyle: const TextStyle(fontSize: 14),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (_controller.text.isNotEmpty) {
+                      print("date : $_date");
+                      print("Time : $_time");
+                      Navigator.pop(context, {
+                        'todoText': _controller.text,
+                        'todoNote': _noteController.text,
+                        'date': _date,
+                        'time': _time,
+                      }); // return value
+                    }
+                  },
+                  child: const Text('Update Todo'),
+                ),
+              ],
+            )),
           ],
         ),
       ),
