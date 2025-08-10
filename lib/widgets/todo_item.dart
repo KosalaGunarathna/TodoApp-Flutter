@@ -3,7 +3,6 @@ import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/model/todo.dart';
 import 'package:custom_check_box/custom_check_box.dart';
 import 'package:todoapp/screens/UpdateTodoPage.dart';
-import 'package:date_field/date_field.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;

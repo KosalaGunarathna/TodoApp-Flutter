@@ -72,53 +72,6 @@ class _HomeState extends State<Home> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Expanded(
-                //   child: Container(
-                //     margin:
-                //         const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                //     padding: EdgeInsets.symmetric(horizontal: 10),
-                //     decoration: BoxDecoration(
-                //       color: Colors.white,
-                //       boxShadow: const [
-                //         BoxShadow(
-                //             color: Colors.grey,
-                //             offset: Offset(0.0, 0.0),
-                //             blurRadius: 10.0,
-                //             spreadRadius: 0.0),
-                //       ],
-                //       borderRadius: BorderRadius.circular(10),
-                //     ),
-                //     child: TextField(
-                //       controller: _todoController,
-                //       decoration: const InputDecoration(
-                //         hintText: 'Add a new todo item',
-                //         border: InputBorder.none,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-
-                // Container(
-                //   margin: const EdgeInsets.only(
-                //     bottom: 20,
-                //     right: 20,
-                //   ),
-                //   child: ElevatedButton(
-                //     onPressed: () {
-                //       _addToDoItem(_todoController.text);
-                //     },
-                //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: Colors.blue, // Background color
-                //       foregroundColor: Colors.white,
-                //     ),
-                //     child: const Text(
-                //       '+',
-                //       style: TextStyle(
-                //         fontSize: 20,
-                //       ),
-                //     ),
-                //   ),
-                // ),
 
                 Container(
                   // margin: const EdgeInsets.only(bottom: 20, right: 20),
@@ -140,10 +93,16 @@ class _HomeState extends State<Home> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
+                      fixedSize: Size(30, 5),
+                    textStyle: const TextStyle(fontSize: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
                     ),
                     child: const Text(
                       '+',
                       style: TextStyle(fontSize: 20),
+                      
                     ),
                   ),
                 ),
