@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:todoapp/model/time_of_day_adapter.dart';
+import 'package:todoapp/model/todo.dart';
 import 'package:todoapp/screens/home.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(ToDoAdapter());
+   Hive.registerAdapter(TimeOfDayAdapter());
+  await Hive.openBox<ToDo>('todos');
+
   runApp(const MyApp());
 }
 
@@ -17,7 +27,7 @@ class MyApp extends StatelessWidget {
         statusBarColor: Colors.transparent, // Make status bar transparent
       ),
     );
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Todo App',
       home: Home(),

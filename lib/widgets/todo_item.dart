@@ -6,15 +6,17 @@ import 'package:todoapp/screens/UpdateTodoPage.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
-  final onToDoChanged;
-  final onDeleteItem;
-  final onUpdateItem;
+  // final onToDoChanged;
+  // final onDeleteItem;
+  // final onUpdateItem;
+  final void Function(String updatedText, String updateNote,
+      DateTime? updateDate, TimeOfDay? updateTime, String id) onUpdateItem;
 
-  const ToDoItem({
+  ToDoItem({
     super.key,
     required this.todo,
-    required this.onDeleteItem,
-    required this.onToDoChanged,
+    // required this.onDeleteItem,
+    // required this.onToDoChanged,
     required this.onUpdateItem,
   });
 
@@ -39,13 +41,15 @@ class ToDoItem extends StatelessWidget {
               ),
             ),
           ).then((updatedText) {
+            print(updatedText['todoText']);
+            print(updatedText['todoNote']);
             if (updatedText['todoText'] != null && updatedText is Map) {
               onUpdateItem(
                 updatedText['todoText'],
                 updatedText['todoNote'],
                 updatedText['date'],
                 updatedText['time'],
-                todo.id,
+                todo.id!,
               );
             }
           });
@@ -63,8 +67,7 @@ class ToDoItem extends StatelessWidget {
           checkBoxSize: 15,
           borderRadius: 3,
           onChanged: (val) {
-            onToDoChanged(todo);
-            
+            // onToDoChanged(todo);
           },
         ),
 
@@ -81,7 +84,7 @@ class ToDoItem extends StatelessWidget {
             ),
             const SizedBox(height: 5),
 
-            // Text(
+            // Text for todo note
             todo.todoNote == null || todo.todoNote!.isEmpty
                 ? const SizedBox.shrink()
                 : Text(
@@ -89,7 +92,8 @@ class ToDoItem extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       color: tdGrey,
-                      decoration: todo.isDone ? TextDecoration.lineThrough : null,
+                      decoration:
+                          todo.isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
           ],
@@ -106,10 +110,11 @@ class ToDoItem extends StatelessWidget {
                   : Text(
                       todo.time!.format(context),
                       style: TextStyle(
-                        fontSize: 10, color: tdGrey,
-                        decoration: todo.isDone ? TextDecoration.lineThrough : null,
-                        ),
-
+                        fontSize: 10,
+                        color: tdGrey,
+                        decoration:
+                            todo.isDone ? TextDecoration.lineThrough : null,
+                      ),
                     ),
 
               const SizedBox(height: 2),
@@ -120,9 +125,11 @@ class ToDoItem extends StatelessWidget {
                   : Text(
                       '${todo.date!.year}-${todo.date!.month.toString().padLeft(2, '0')}-${todo.date!.day.toString().padLeft(2, '0')}',
                       style: TextStyle(
-                        fontSize: 10, color: tdGrey,
-                        decoration: todo.isDone ? TextDecoration.lineThrough : null,
-                        ),
+                        fontSize: 10,
+                        color: tdGrey,
+                        decoration:
+                            todo.isDone ? TextDecoration.lineThrough : null,
+                      ),
                     )
             ],
           ),
@@ -132,31 +139,31 @@ class ToDoItem extends StatelessWidget {
         trailing: IconButton(
           icon: const Icon(Icons.delete, color: tdRed),
           onPressed: () {
-            showDialog(context: context,
-             builder: (context) {
-              return AlertDialog(
-                title: const Text('Delete Todo'),
-                content: const Text('Are you sure you want to delete this todo?'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      onDeleteItem(todo.id);
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                    child: const Text('Delete',style: TextStyle(color: tdRed)),
-                  ),
-                ],
-              );
-             });
-
-            // print('click delet button');
-            // onDeleteItem(todo.id);
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Delete Todo'),
+                    content: const Text(
+                        'Are you sure you want to delete this todo?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // onDeleteItem(todo.id);
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('Delete',
+                            style: TextStyle(color: tdRed)),
+                      ),
+                    ],
+                  );
+                });
           },
         ),
       ),
