@@ -72,8 +72,8 @@ class _HomeState extends State<Home> {
                       for (ToDo todoo in _foundTodo.reversed)
                         ToDoItem(
                           todo: todoo,
-                          // onToDoChanged: _handleToDoChange,
-                          // onDeleteItem: _handleDeleteItem,
+                          onToDoChanged: _handleToDoChange,
+                          onDeleteItem: _handleDeleteItem,
                           onUpdateItem: _updateTodoItem,
                         ),
                     ],
@@ -130,32 +130,34 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // void _handleToDoChange(ToDo todo) {
-  //   setState(() {
-  //     todo.isDone = !todo.isDone;
-  //   });
-  // }
+  void _handleToDoChange(ToDo todo) {
+    setState(() {
+      todo.isDone = !todo.isDone;
+    });
+  }
 
-  // void _handleDeleteItem(String id) {
-  //   setState(() {
-  //     todoList.removeWhere((item) => item.id == id);
-  //   });
-  // }
+  void _handleDeleteItem(String id) {
+    final index = todoBox.values.toList().indexWhere((item) => item.id == id);
+    if (index != -1) {
+      todoBox.deleteAt(index);
+      _loadTodos();
+    }
+  }
 
-  // void _searchTodo(String enterKeyword) {
-  //   List<ToDo> results = [];
-  //   if (enterKeyword.isEmpty) {
-  //     results = todoList;
-  //   } else {
-  //     results = todoList
-  //         .where((item) =>
-  //             item.todoText!.toLowerCase().contains(enterKeyword.toLowerCase()))
-  //         .toList();
-  //   }
-  //   setState(() {
-  //     _foundTodo = results;
-  //   });
-  // }
+  void _searchTodo(String enterKeyword) {
+    List<ToDo> results = [];
+    if (enterKeyword.isEmpty) {
+      results = _foundTodo;
+    } else {
+      results = _foundTodo
+          .where((item) =>
+              item.todoText!.toLowerCase().contains(enterKeyword.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      _foundTodo = results;
+    });
+  }
 
   void _updateTodoItem(String updatedText, String updateNote,
       DateTime? updateDate, TimeOfDay? updateTime, String id) {
@@ -175,7 +177,6 @@ class _HomeState extends State<Home> {
         todo.time = updateTime;
         todo.save();
         _loadTodos();
-
       }
     });
   }
@@ -207,7 +208,7 @@ class _HomeState extends State<Home> {
         boxShadow: [
           BoxShadow(
             color:
-                Colors.grey.withOpacity(0.5), // shadow color with transparency
+            Colors.grey.withOpacity(0.5), // shadow color with transparency
             spreadRadius: 2, // shadow size expansion
             blurRadius: 7, // blur effect
             offset: const Offset(0, 3), // shadow position (x, y)
@@ -220,7 +221,7 @@ class _HomeState extends State<Home> {
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
-              // onChanged: (value) => _searchTodo(value),
+              onChanged: (value) => _searchTodo(value),
               decoration: const InputDecoration(
                 hintText: 'Search',
                 border: InputBorder.none,

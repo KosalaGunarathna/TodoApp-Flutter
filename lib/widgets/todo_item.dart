@@ -7,17 +7,19 @@ import 'package:todoapp/screens/UpdateTodoPage.dart';
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
   // final onToDoChanged;
-  // final onDeleteItem;
+  final onDeleteItem;
   // final onUpdateItem;
+  final void Function(ToDo todo) onToDoChanged;
   final void Function(String updatedText, String updateNote,
       DateTime? updateDate, TimeOfDay? updateTime, String id) onUpdateItem;
 
   ToDoItem({
     super.key,
     required this.todo,
-    // required this.onDeleteItem,
-    // required this.onToDoChanged,
+    required this.onDeleteItem,
+    required this.onToDoChanged,
     required this.onUpdateItem,
+    
   });
 
   @override
@@ -67,7 +69,7 @@ class ToDoItem extends StatelessWidget {
           checkBoxSize: 15,
           borderRadius: 3,
           onChanged: (val) {
-            // onToDoChanged(todo);
+            onToDoChanged(todo);
           },
         ),
 
@@ -155,7 +157,7 @@ class ToDoItem extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // onDeleteItem(todo.id);
+                          onDeleteItem(todo.id);
                           Navigator.of(context).pop(); // Close the dialog
                         },
                         child: const Text('Delete',
