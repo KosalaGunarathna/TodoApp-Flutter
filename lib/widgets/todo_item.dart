@@ -92,7 +92,7 @@ class ToDoItem extends StatelessWidget {
                 : Text(
                     todo.todoNote!,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       color: tdGrey,
                       decoration:
                           todo.isDone ? TextDecoration.lineThrough : null,
@@ -112,7 +112,7 @@ class ToDoItem extends StatelessWidget {
                   : Text(
                       todo.time!.format(context),
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: tdGrey,
                         decoration:
                             todo.isDone ? TextDecoration.lineThrough : null,
@@ -127,7 +127,7 @@ class ToDoItem extends StatelessWidget {
                   : Text(
                       '${todo.date!.year}-${todo.date!.month.toString().padLeft(2, '0')}-${todo.date!.day.toString().padLeft(2, '0')}',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: tdGrey,
                         decoration:
                             todo.isDone ? TextDecoration.lineThrough : null,

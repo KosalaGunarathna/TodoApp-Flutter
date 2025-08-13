@@ -13,7 +13,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  // final todoList = ToDo.todoList();
   late Box<ToDo> todoBox;
 
   List<ToDo> _foundTodo = [];
@@ -21,7 +20,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    // _foundTodo = todoList;
     super.initState();
     todoBox = Hive.box<ToDo>('todos');
     _loadTodos();
@@ -45,6 +43,7 @@ class _HomeState extends State<Home> {
             child: Column(
               children: [
                 searchBox(),
+
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.only(bottom: 50),
@@ -55,20 +54,13 @@ class _HomeState extends State<Home> {
                           bottom: 10,
                         ),
                         child: const Text(
-                          'All ToDos',
+                          'All Todos',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                      // for (ToDo todoo in todos)
-                      //   ToDoItem(
-                      //     todo: todoo,
-                      //     onToDoChanged: _handleToDoChange,
-                      //     onDeleteItem: _handleDeleteItem,
-                      //     onUpdateItem: _updateTodoItem,
-                      //   ),
                       for (ToDo todoo in _foundTodo.reversed)
                         ToDoItem(
                           todo: todoo,
@@ -91,9 +83,12 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  // margin: const EdgeInsets.only(bottom: 20, right: 20),
-                  padding: const EdgeInsets.all(20),
+                  // width: 60,  
+                  height: 45,
+                  margin: const EdgeInsets.only(bottom:40, right: 40),
+                  // padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
+                    
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -110,15 +105,15 @@ class _HomeState extends State<Home> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      fixedSize: Size(30, 5),
+                      alignment: Alignment.center,
                       textStyle: const TextStyle(fontSize: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                     ),
                     child: const Text(
-                      '+',
-                      style: TextStyle(fontSize: 20),
+                      'Add new todo',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
@@ -165,11 +160,6 @@ class _HomeState extends State<Home> {
       // final index = _.indexWhere((item) => item.id == id);
       final index = _foundTodo.indexWhere((item) => item.id == id);
       if (index != -1) {
-        // todoList[index].todoText = updatedText;
-        // todoList[index].todoNote = updateNote;
-        // todoList[index].date = updateDate; // Update date if needed
-        // todoList[index].time = updateTime; // Update time if needed
-
         final todo = _foundTodo[index];
         todo.todoText = updatedText;
         todo.todoNote = updateNote;
