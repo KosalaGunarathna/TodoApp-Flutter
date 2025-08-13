@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/screens/AddTodoPage.dart';
 import '../widgets/todo_item.dart';
 import '../model/todo.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  final todoList = ToDo.todoList();
+  late Box<ToDo> todoBox;
+
   List<ToDo> _foundTodo = [];
   final _todoController = TextEditingController();
 
   @override
   void initState() {
-    _foundTodo = todoList;
     super.initState();
+    todoBox = Hive.box<ToDo>('todos');
+    _loadTodos();
+  }
+
+  void _loadTodos() {
+    setState(() {
+      _foundTodo = todoBox.values.toList();
+    });
   }
 
   @override
@@ -34,6 +43,7 @@ class _HomeState extends State<Home> {
             child: Column(
               children: [
                 searchBox(),
+
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.only(bottom: 50),
@@ -44,7 +54,7 @@ class _HomeState extends State<Home> {
                           bottom: 10,
                         ),
                         child: const Text(
-                          'All ToDos',
+                          'All Todos',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -72,37 +82,38 @@ class _HomeState extends State<Home> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-
                 Container(
-                  // margin: const EdgeInsets.only(bottom: 20, right: 20),
-                  padding: const EdgeInsets.all(20),
+                  // width: 60,  
+                  height: 45,
+                  margin: const EdgeInsets.only(bottom:40, right: 40),
+                  // padding: const EdgeInsets.all(10),
                   child: ElevatedButton(
+                    
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AddTodoPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const AddTodoPage()),
                       ).then((value) {
-                          print(value); // This will print the whole map
+                        print(value); // This will print the whole map
 
-                          if (value != null && value is Map) {
-
-                            _addToDoItem(value['todoText'], value['todoNote']);
-                          }
-                        });
+                        if (value != null && value is Map) {
+                          _addToDoItem(value['todoText'], value['todoNote']);
+                        }
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      fixedSize: Size(30, 5),
-                    textStyle: const TextStyle(fontSize: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
+                      alignment: Alignment.center,
+                      textStyle: const TextStyle(fontSize: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
                     ),
                     child: const Text(
-                      '+',
-                      style: TextStyle(fontSize: 20),
-                      
+                      'Add new todo',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
@@ -121,17 +132,19 @@ class _HomeState extends State<Home> {
   }
 
   void _handleDeleteItem(String id) {
-    setState(() {
-      todoList.removeWhere((item) => item.id == id);
-    });
+    final index = todoBox.values.toList().indexWhere((item) => item.id == id);
+    if (index != -1) {
+      todoBox.deleteAt(index);
+      _loadTodos();
+    }
   }
 
   void _searchTodo(String enterKeyword) {
     List<ToDo> results = [];
     if (enterKeyword.isEmpty) {
-      results = todoList;
+      results = _foundTodo;
     } else {
-      results = todoList
+      results = _foundTodo
           .where((item) =>
               item.todoText!.toLowerCase().contains(enterKeyword.toLowerCase()))
           .toList();
@@ -141,31 +154,37 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _updateTodoItem(String updatedText,String updateNote,DateTime? updateDate,TimeOfDay? updateTime,String id) {
+  void _updateTodoItem(String updatedText, String updateNote,
+      DateTime? updateDate, TimeOfDay? updateTime, String id) {
     setState(() {
-      final index = todoList.indexWhere((item) => item.id == id);
+      // final index = _.indexWhere((item) => item.id == id);
+      final index = _foundTodo.indexWhere((item) => item.id == id);
       if (index != -1) {
-        todoList[index].todoText = updatedText;
-        todoList[index].todoNote = updateNote; 
-        todoList[index].date = updateDate; // Update date if needed
-        todoList[index].time = updateTime; // Update time if needed
+        final todo = _foundTodo[index];
+        todo.todoText = updatedText;
+        todo.todoNote = updateNote;
+        todo.date = updateDate;
+        todo.time = updateTime;
+        todo.save();
+        _loadTodos();
       }
     });
   }
 
-  void _addToDoItem(String todo,String todoNote) {
+  void _addToDoItem(String todo, String todoNote) {
     if (todo.isNotEmpty) {
       setState(() {
-        todoList.add(ToDo(
+        final newTodo = ToDo(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           todoText: todo,
-          todoNote: todoNote, // You can add a note here if needed
-          date: DateTime.now(), // Add current date
-          time: TimeOfDay.now(), // Add current time
-        ));
+          todoNote: todoNote,
+          date: DateTime.now(),
+          time: TimeOfDay.now(),
+        );
+        todoBox.add(newTodo); // save to Hive
+        _loadTodos(); // refresh list
         _todoController.clear();
       });
-      _todoController.clear();
     }
   }
 
@@ -179,7 +198,7 @@ class _HomeState extends State<Home> {
         boxShadow: [
           BoxShadow(
             color:
-                Colors.grey.withOpacity(0.5), // shadow color with transparency
+            Colors.grey.withOpacity(0.5), // shadow color with transparency
             spreadRadius: 2, // shadow size expansion
             blurRadius: 7, // blur effect
             offset: const Offset(0, 3), // shadow position (x, y)

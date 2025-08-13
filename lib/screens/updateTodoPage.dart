@@ -47,6 +47,7 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
           ),
           textAlign: TextAlign.center,
         ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -80,6 +81,7 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                 ),
               ),
               keyboardType: TextInputType.multiline,
+              maxLines: null,
               // maxLines: 2,
             ),
 
@@ -144,7 +146,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
               },
             ),
 
-            SizedBox(height: 20),
+            // SizedBox(height: 20),
+            Spacer(),
 
             Container(
                 child: Row(
@@ -174,8 +177,6 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue, // background color
                     foregroundColor: Colors.white, // text color
-                    // fixedSize:Size(width, height),
-                    // padding: const EdgeInsets.symmetric(horizontal: 12, vertical:-5 ),
                     textStyle: const TextStyle(fontSize: 14),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
