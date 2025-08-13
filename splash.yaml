@@ -1,0 +1,11 @@
+flutter_native_splash:
+  color: "#ffffff" # Background color
+  color_dark: "#000000" # Optional dark mode background color
+  image: assets/images/icon.png # Path to your splash image
+  image_dark: assets/images/icon.png # Optional dark mode splash image
+  android: true # Enable for Android
+  ios: true # Enable for iOS
+  web: true # Enable for Web
+  
+
+
