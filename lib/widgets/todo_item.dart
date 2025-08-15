@@ -6,9 +6,7 @@ import 'package:todoapp/screens/UpdateTodoPage.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
-  // final onToDoChanged;
   final onDeleteItem;
-  // final onUpdateItem;
   final void Function(ToDo todo) onToDoChanged;
   final void Function(String updatedText, String updateNote,
       DateTime? updateDate, TimeOfDay? updateTime, String id) onUpdateItem;
