@@ -32,29 +32,3 @@ class ToDo extends HiveObject {
   TimeOfDay? time;
 }
 
-List<ToDo> exampleTodos = [
-  ToDo(
-    id: "1",
-    todoText: "Buy groceries",
-    isDone: false,
-    todoNote: "Remember to buy milk and eggs",
-    date: DateTime.now(),
-    time: TimeOfDay(hour: 10, minute: 30),
-  ),
-  ToDo(
-    id: "2",
-    todoText: "Call mom",
-    isDone: false,
-    todoNote: "Her birthday today 🎂",
-    date: DateTime.now(),
-    time: TimeOfDay(hour: 15, minute: 0),
-  ),
-  ToDo(
-    id: "3",
-    todoText: "Finish Flutter project",
-    isDone: false,
-    todoNote: "Due next week",
-    date: DateTime.now().add(Duration(days: 2)),
-    time: TimeOfDay(hour: 18, minute: 45),
-  ),
-];

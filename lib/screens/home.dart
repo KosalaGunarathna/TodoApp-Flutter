@@ -98,7 +98,7 @@ class _HomeState extends State<Home> {
                         print(value); // This will print the whole map
 
                         if (value != null && value is Map) {
-                          _addToDoItem(value['todoText'], value['todoNote']);
+                          _addToDoItem(value['todoText'], value['todoNote'],value['date'], value['time']);
                         }
                       });
                     },
@@ -171,15 +171,15 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _addToDoItem(String todo, String todoNote) {
+  void _addToDoItem(String todo, String todoNote, DateTime? date, TimeOfDay? time) {
     if (todo.isNotEmpty) {
       setState(() {
         final newTodo = ToDo(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           todoText: todo,
           todoNote: todoNote,
-          date: DateTime.now(),
-          time: TimeOfDay.now(),
+          date: date,
+          time: time,
         );
         todoBox.add(newTodo); // save to Hive
         _loadTodos(); // refresh list

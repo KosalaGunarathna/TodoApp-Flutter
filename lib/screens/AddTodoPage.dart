@@ -146,8 +146,6 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         ),
                       ),
                       onPressed: () {
-                        // print("time: $_time");
-                        // print("date :$_date");
 
                         if (_controller.text.isEmpty) {
                           showDialog(
