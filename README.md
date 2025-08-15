@@ -14,34 +14,34 @@ This app allows users to create, edit, and delete tasks with persistent storage 
 - ⚡ Lightweight and offline-first
 
 
-## 🖼 Screenshots
+ Screenshots
 
 <table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td align="center">
-      <img width="240" src="https://github.com/user-attachments/assets/61f1094c-2314-4c71-803f-2cd250118b84" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/9ea63f11-37bd-462c-b89c-5ee089c2597f" /><br>
       Home Screen
     </td>
     <td align="center">
-      <img width="240" src="https://github.com/user-attachments/assets/ea5e39b8-9e2e-4572-88dc-11c352e28b78" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/ea5e39b8-9e2e-4572-88dc-11c352e28b78" /><br>
       Add Task
     </td>
     <td align="center">
-      <img width="240" src="https://github.com/user-attachments/assets/0c20fc65-f683-4813-8ff2-dd713f9979da" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/bc6d6850-caee-434c-9af3-25a521c43583" /><br>
       Completed Tasks
     </td>
   </tr>
   <tr>
     <td align="center">
-      <img width="240" src="https://github.com/user-attachments/assets/c96921a2-6606-465c-9194-d1b6ddf885d2" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/8fe49fd6-2623-4193-a103-49d2871031f8" /><br>
       Update Task
     </td>
     <td align="center">
-      <img width="240" src="https://github.com/user-attachments/assets/62e17b9b-6355-4df6-943d-e6b31078df47" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/62e17b9b-6355-4df6-943d-e6b31078df47" /><br>
       Delete Task
     </td>
     <td align="center">
-      <img width="240" src="https://github.com/user-attachments/assets/3eb981ae-4017-4d03-8a1a-3f83759182df" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/3eb981ae-4017-4d03-8a1a-3f83759182df" /><br>
       Popup mesage
     </td>
   </tr>
