@@ -5,7 +5,7 @@ import 'package:todoapp/screens/home.dart';
 class UpdateTodoPage extends StatefulWidget {
   final String currentText;
   final String? currentNote;
-  final DateTime? currentDate; // Initialize selected date to null
+  final DateTime? currentDate;
   final TimeOfDay? currentTime;
 
   const UpdateTodoPage({
@@ -23,7 +23,7 @@ class UpdateTodoPage extends StatefulWidget {
 class _UpdateTodoPageState extends State<UpdateTodoPage> {
   late TextEditingController _controller;
   late TextEditingController _noteController;
-  late DateTime? _date; // Initialize selected date to null
+  late DateTime? _date;
   late TimeOfDay? _time;
 
   @override
@@ -32,195 +32,342 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
     _controller = TextEditingController(text: widget.currentText);
     _noteController = TextEditingController(text: widget.currentNote ?? '');
     _date = widget.currentDate;
-    _time = widget.currentTime; // Default to current date
+    _time = widget.currentTime;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _noteController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600;
+
+    final horizontalPadding = isTablet ? screenWidth * 0.12 : 20.0;
+    final titleFontSize = isTablet ? 24.0 : 20.0;
+    final labelFontSize = isTablet ? 16.0 : 14.0;
+    final buttonHeight = isTablet ? 52.0 : 44.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
           'Update Todo',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
-          textAlign: TextAlign.center,
         ),
-        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                hintText: 'Enter New Todo',
-                hintStyle: TextStyle(fontWeight: FontWeight.normal),
-                border: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+                vertical: 24,
               ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-            ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - 48),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Todo Title ──────────────────────────────────────
+                      _buildLabel('Todo Title', labelFontSize),
+                      const SizedBox(height: 8),
+                      _buildInputCard(
+                        child: TextFormField(
+                          controller: _controller,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter todo item...',
+                            hintStyle: TextStyle(color: Colors.black38),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          style: const TextStyle(fontSize: 15, color: Colors.black87),
+                        ),
+                      ),
 
-            SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-            //todo note
-            TextFormField(
-              controller: _noteController,
-              decoration: const InputDecoration(
-                hintText: 'Add Note',
-                hintStyle: TextStyle(fontWeight: FontWeight.normal),
-                border: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              // maxLines: 2,
-            ),
+                      // ── Note ────────────────────────────────────────────
+                      _buildLabel('Note', labelFontSize),
+                      const SizedBox(height: 8),
+                      _buildInputCard(
+                        child: TextFormField(
+                          controller: _noteController,
+                          decoration: const InputDecoration(
+                            hintText: 'Add a note (optional)...',
+                            hintStyle: TextStyle(color: Colors.black38),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 3,
+                          style: const TextStyle(fontSize: 15, color: Colors.black87),
+                        ),
+                      ),
 
-            const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-            DateTimeFormField(
-              initialValue: _date,
-              decoration: const InputDecoration(
-                labelText: 'Select Date',
-                border: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ),
-              mode: DateTimeFieldPickerMode.date, // Only date
-              onChanged: (DateTime? value) {
-                setState(() {
-                  if (value != null) {
-                    _date = value != null
-                        ? DateTime(value.year, value.month, value.day)
-                        : null;
-                  } else {
-                    _date = null; // Reset date if value is null
-                  }
-                  print('Selected Date: $_date');
-                });
-              },
-            ),
+                      // ── Date & Time (side-by-side on tablet) ───────────
+                      isTablet
+                          ? Row(
+                              children: [
+                                Expanded(child: _buildDateField(labelFontSize)),
+                                const SizedBox(width: 16),
+                                Expanded(child: _buildTimeField(labelFontSize)),
+                              ],
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildDateField(labelFontSize),
+                                const SizedBox(height: 20),
+                                _buildTimeField(labelFontSize),
+                              ],
+                            ),
 
-            const SizedBox(height: 20),
+                      const Spacer(),
+                      const SizedBox(height: 32),
 
-            // Time Picker
-            DateTimeFormField(
-              initialValue: _time != null
-                  ? DateTime(
-                      DateTime.now().year,
-                      DateTime.now().month,
-                      DateTime.now().day,
-                      _time!.hour,
-                      _time!.minute,
-                    )
-                  : null,
-              decoration: const InputDecoration(
-                labelText: 'Select Time',
-                border: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ),
-              mode: DateTimeFieldPickerMode.time, // Only time
-              onChanged: (DateTime? value) {
-                setState(() {
-                  if (value != null) {
-                    _time = value != null
-                        ? TimeOfDay(hour: value.hour, minute: value.minute)
-                        : null;
-                  } else {
-                    _time = null; // Reset time if value is null
-                  }
-                  print('Selected Time: $_time');
-                });
-              },
-            ),
-
-            // SizedBox(height: 20),
-            Spacer(),
-
-            Container(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // background color
-                    foregroundColor: Colors.white, // text color
-                    // padding: const EdgeInsets.symmetric(horizontal: 12, vertical:-5 ),
-                    fixedSize: Size(100, 5),
-                    textStyle: const TextStyle(fontSize: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Home(),
-                        ));
-                  },
-                  child: Text('Cancel'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // background color
-                    foregroundColor: Colors.white, // text color
-                    textStyle: const TextStyle(fontSize: 14),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                  ),
-                  onPressed: () {
-                      if (_controller.text.isEmpty) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Required",style: TextStyle(fontSize: 20)  ),
-                        content: const Text("Please enter a Todo Item."),
-                        actions: [
-                          TextButton(
-                            child: const Text("OK"),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
+                      // ── Action Buttons ──────────────────────────────────
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: buttonHeight,
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.blue,
+                                  side: const BorderSide(color: Colors.blue, width: 1.5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: buttonFontSize,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => Home()),
+                                  );
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 2,
+                            child: SizedBox(
+                              height: buttonHeight,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: buttonFontSize,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  if (_controller.text.isEmpty) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          title: const Text(
+                                            'Required',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          content: const Text('Please enter a Todo item.'),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text('OK'),
+                                              onPressed: () => Navigator.of(context).pop(),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                    return;
+                                  }
+                                  Navigator.pop(context, {
+                                    'todoText': _controller.text,
+                                    'todoNote': _noteController.text,
+                                    'date': _date,
+                                    'time': _time,
+                                  });
+                                },
+                                child: const Text('Update Todo'),
+                              ),
+                            ),
                           ),
                         ],
-                      );
-                    },
-                  );
-                }
+                      ),
 
-                    if (_controller.text.isNotEmpty) {
-                      print("date : $_date");
-                      print("Time : $_time");
-                      Navigator.pop(context, {
-                        'todoText': _controller.text,
-                        'todoNote': _noteController.text,
-                        'date': _date,
-                        'time': _time,
-                      }); // return value
-                    }
-                  },
-                  child: const Text('Update Todo'),
+                      SizedBox(
+                        height: MediaQuery.of(context).viewInsets.bottom > 0 ? 16 : 8,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            )),
-          ],
+              ),
+            );
+          },
         ),
       ),
+    );
+  }
+
+  Widget _buildLabel(String text, double fontSize) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w600,
+        color: Colors.black54,
+        letterSpacing: 0.3,
+      ),
+    );
+  }
+
+  Widget _buildInputCard({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildDateField(double labelFontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildLabel('Date', labelFontSize),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 10,
+                spreadRadius: 1,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: DateTimeFormField(
+            initialValue: _date,
+            decoration: const InputDecoration(
+              hintText: 'Select date',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+            mode: DateTimeFieldPickerMode.date,
+            onChanged: (DateTime? value) {
+              setState(() {
+                _date = value != null
+                    ? DateTime(value.year, value.month, value.day)
+                    : null;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimeField(double labelFontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildLabel('Time', labelFontSize),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 10,
+                spreadRadius: 1,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: DateTimeFormField(
+            initialValue: _time != null
+                ? DateTime(
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                    _time!.hour,
+                    _time!.minute,
+                  )
+                : null,
+            decoration: const InputDecoration(
+              hintText: 'Select time',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+            mode: DateTimeFieldPickerMode.time,
+            onChanged: (DateTime? value) {
+              setState(() {
+                _time = value != null
+                    ? TimeOfDay(hour: value.hour, minute: value.minute)
+                    : null;
+              });
+            },
+          ),
+        ),
+      ],
     );
   }
 }

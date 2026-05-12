@@ -4,6 +4,7 @@ import 'package:todoapp/model/time_of_day_adapter.dart';
 import 'package:todoapp/model/todo.dart';
 import 'package:todoapp/screens/home.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:todoapp/service/notification_service.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,7 @@ void main() async{
   Hive.registerAdapter(ToDoAdapter());
   Hive.registerAdapter(TimeOfDayAdapter());
   await Hive.openBox<ToDo>('todos');
+
 
   runApp(const MyApp());
 }
