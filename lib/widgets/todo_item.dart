@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/model/todo.dart';
 import 'package:custom_check_box/custom_check_box.dart';
-import 'package:todoapp/screens/UpdateTodoPage.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo todo;
@@ -17,7 +17,6 @@ class ToDoItem extends StatelessWidget {
     required this.onDeleteItem,
     required this.onToDoChanged,
     required this.onUpdateItem,
-    
   });
 
   @override
@@ -30,20 +29,10 @@ class ToDoItem extends StatelessWidget {
         ),
 
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UpdateTodoPage(
-                currentText: todo.todoText!,
-                currentNote: todo.todoNote,
-                currentDate: todo.date,
-                currentTime: todo.time,
-              ),
-            ),
-          ).then((updatedText) {
-            print(updatedText['todoText']);
-            print(updatedText['todoNote']);
-            if (updatedText['todoText'] != null && updatedText is Map) {
+          context.push('/update', extra: todo).then((updatedText) {
+            if (updatedText is Map) {
+              print(updatedText['todoText']);
+              print(updatedText['todoNote']);
               onUpdateItem(
                 updatedText['todoText'],
                 updatedText['todoNote'],

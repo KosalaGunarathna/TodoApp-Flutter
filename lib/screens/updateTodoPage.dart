@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
-import 'package:todoapp/screens/home.dart';
+import 'package:go_router/go_router.dart';
 
 class UpdateTodoPage extends StatefulWidget {
   final String currentText;
@@ -60,7 +60,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
         elevation: 0.5,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -81,7 +82,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                 vertical: 24,
               ),
               child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight - 48),
+                constraints:
+                    BoxConstraints(minHeight: constraints.maxHeight - 48),
                 child: IntrinsicHeight(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +102,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                           ),
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
-                          style: const TextStyle(fontSize: 15, color: Colors.black87),
+                          style: const TextStyle(
+                              fontSize: 15, color: Colors.black87),
                         ),
                       ),
 
@@ -120,7 +123,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                           ),
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
-                          style: const TextStyle(fontSize: 15, color: Colors.black87),
+                          style: const TextStyle(
+                              fontSize: 15, color: Colors.black87),
                         ),
                       ),
 
@@ -156,7 +160,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.blue,
-                                  side: const BorderSide(color: Colors.blue, width: 1.5),
+                                  side: const BorderSide(
+                                      color: Colors.blue, width: 1.5),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -166,10 +171,11 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => Home()),
-                                  );
+                                  if (context.canPop()) {
+                                    context.pop();
+                                  } else {
+                                    context.go('/');
+                                  }
                                 },
                                 child: const Text('Cancel'),
                               ),
@@ -200,7 +206,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
                                           ),
                                           title: const Text(
                                             'Required',
@@ -209,11 +216,13 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          content: const Text('Please enter a Todo item.'),
+                                          content: const Text(
+                                              'Please enter a Todo item.'),
                                           actions: [
                                             TextButton(
                                               child: const Text('OK'),
-                                              onPressed: () => Navigator.of(context).pop(),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
                                             ),
                                           ],
                                         );
@@ -236,7 +245,9 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                       ),
 
                       SizedBox(
-                        height: MediaQuery.of(context).viewInsets.bottom > 0 ? 16 : 8,
+                        height: MediaQuery.of(context).viewInsets.bottom > 0
+                            ? 16
+                            : 8,
                       ),
                     ],
                   ),

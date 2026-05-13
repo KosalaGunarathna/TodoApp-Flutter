@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/screens/AddTodoPage.dart';
@@ -136,14 +137,7 @@ class _HomeState extends State<Home> {
                   // Add button
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const AddTodoPage()),
-                      ).then((value) {
-                        if (value != null && value is Map) {
-                          _addToDoItem(value['todoText'], value['todoNote'], value['date'], value['time']);
-                        }
-                      });
+                      context.push('/add');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -154,7 +148,7 @@ class _HomeState extends State<Home> {
                       textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                     child: const Text('Add'),
-                  ),                  
+                  )               
                 ],
               ),
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
-import 'package:todoapp/screens/home.dart';
+import 'package:go_router/go_router.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -34,7 +34,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
         elevation: 0.5,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -138,7 +139,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.blue,
-                                  side: const BorderSide(color: Colors.blue, width: 1.5),
+                                  side: const BorderSide(
+                                      color: Colors.blue, width: 1.5),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -148,12 +150,11 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Home(),
-                                    ),
-                                  );
+                                  if (context.canPop()) {
+                                    context.pop();
+                                  } else {
+                                    context.go('/');
+                                  }
                                 },
                                 child: const Text('Cancel'),
                               ),
@@ -184,17 +185,22 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
                                           ),
                                           title: const Text(
                                             'Required',
-                                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
                                           ),
-                                          content: const Text('Please enter a Todo item.'),
+                                          content: const Text(
+                                              'Please enter a Todo item.'),
                                           actions: [
                                             TextButton(
                                               child: const Text('OK'),
-                                              onPressed: () => Navigator.of(context).pop(),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
                                             ),
                                           ],
                                         );
@@ -216,7 +222,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         ],
                       ),
 
-                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom > 0 ? 16 : 8),
+                      SizedBox(
+                          height: MediaQuery.of(context).viewInsets.bottom > 0
+                              ? 16
+                              : 8),
                     ],
                   ),
                 ),
