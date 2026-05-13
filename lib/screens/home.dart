@@ -131,6 +131,7 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
+ 
 
                   // Add button
                   ElevatedButton(
@@ -153,7 +154,7 @@ class _HomeState extends State<Home> {
                       textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                     child: const Text('Add'),
-                  ),
+                  ),                  
                 ],
               ),
             ),
