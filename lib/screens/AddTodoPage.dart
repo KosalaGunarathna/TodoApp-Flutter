@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todoapp/color_theam/color.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -15,10 +17,39 @@ class _AddTodoPageState extends State<AddTodoPage> {
   DateTime? _date;
   TimeOfDay? _time;
 
+  bool _darkMode = false;
+  late Box _settingsBox;
+  
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      if (!Hive.isBoxOpen('settings')) {
+        _settingsBox = await Hive.openBox('settings');
+      } else {
+        _settingsBox = Hive.box('settings');
+      }
+      setState(() {
+        _darkMode = _settingsBox.get('darkMode', defaultValue: false);
+      });
+    } catch (e) {
+      print('Error loading settings: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth >= 600;
+    final bgColor = getBGColor(_darkMode);
+    final cardColor = getCardColor(_darkMode);
+    final textColor = getTextColor(_darkMode);
+    final subtitleColor = getSubtitleColor(_darkMode);
 
     // Responsive sizing
     final horizontalPadding = isTablet ? screenWidth * 0.12 : 20.0;
@@ -28,22 +59,21 @@ class _AddTodoPageState extends State<AddTodoPage> {
     final buttonFontSize = isTablet ? 16.0 : 14.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: bgColor,
         elevation: 0.5,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textColor),
+          onPressed: () => context.go('/'),
         ),
         title: Text(
           'Add New Todo',
           style: TextStyle(
             fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: textColor,
           ),
         ),
       ),
@@ -64,14 +94,18 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // ── Todo Title Field ────────────────────────────────
-                      _buildLabel('Todo Title', labelFontSize),
+                      _buildLabel('Todo Title', labelFontSize,textColor),
                       const SizedBox(height: 8),
                       _buildInputCard(
+                        bgColor: cardColor,
+                        textColor: textColor,
+                        subtitleColor: subtitleColor,
+                        shadowDarkMode: _darkMode,
                         child: TextFormField(
                           controller: _controller,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Enter todo item...',
-                            hintStyle: TextStyle(color: Colors.black38),
+                            hintStyle: TextStyle(color: textColor),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -87,14 +121,18 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       const SizedBox(height: 20),
 
                       // ── Note Field ──────────────────────────────────────
-                      _buildLabel('Note', labelFontSize),
+                      _buildLabel('Note', labelFontSize,textColor),
                       const SizedBox(height: 8),
                       _buildInputCard(
+                        bgColor: cardColor,
+                        textColor: textColor,
+                        subtitleColor: subtitleColor,
+                        shadowDarkMode: _darkMode,
                         child: TextFormField(
                           controller: _notecontroller,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Add a note (optional)...',
-                            hintStyle: TextStyle(color: Colors.black38),
+                            hintStyle: TextStyle(color: textColor),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -113,17 +151,17 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       isTablet
                           ? Row(
                               children: [
-                                Expanded(child: _buildDateField(labelFontSize)),
+                                Expanded(child: _buildDateField(labelFontSize, textColor, cardColor)),
                                 const SizedBox(width: 16),
-                                Expanded(child: _buildTimeField(labelFontSize)),
+                                Expanded(child: _buildTimeField(labelFontSize, textColor, cardColor )),
                               ],
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildDateField(labelFontSize),
+                                _buildDateField(labelFontSize, textColor, cardColor),
                                 const SizedBox(height: 20),
-                                _buildTimeField(labelFontSize),
+                                _buildTimeField(labelFontSize, textColor, cardColor),
                               ],
                             ),
 
@@ -237,24 +275,30 @@ class _AddTodoPageState extends State<AddTodoPage> {
     );
   }
 
-  Widget _buildLabel(String text, double fontSize) {
+  Widget _buildLabel(String text, double fontSize,textColor) {
     return Text(
       text,
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.w600,
-        color: Colors.black54,
+        color: textColor,
         letterSpacing: 0.3,
       ),
     );
   }
 
-  Widget _buildInputCard({required Widget child}) {
+  Widget _buildInputCard({
+    required Color bgColor,
+    required Color textColor,
+    required Color subtitleColor,
+    required bool shadowDarkMode,
+    required Widget child,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: bgColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -269,16 +313,16 @@ class _AddTodoPageState extends State<AddTodoPage> {
     );
   }
 
-  Widget _buildDateField(double labelFontSize) {
+  Widget _buildDateField(double labelFontSize, Color textColor, Color cardColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel('Date', labelFontSize),
+        _buildLabel('Date', labelFontSize,textColor),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -290,8 +334,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
             ],
           ),
           child: DateTimeFormField(
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Select date',
+              hintStyle: TextStyle(color:textColor),
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
             ),
@@ -309,16 +354,16 @@ class _AddTodoPageState extends State<AddTodoPage> {
     );
   }
 
-  Widget _buildTimeField(double labelFontSize) {
+  Widget _buildTimeField(double labelFontSize, Color textColor, Color cardColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel('Time', labelFontSize),
+        _buildLabel('Time', labelFontSize, textColor),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -330,8 +375,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
             ],
           ),
           child: DateTimeFormField(
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Select time',
+              hintStyle: TextStyle(color:textColor),
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
             ),

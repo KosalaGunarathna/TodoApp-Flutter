@@ -1,7 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:todoapp/model/todo.dart';
 import 'package:todoapp/screens/AddTodoPage.dart';
+import 'package:todoapp/screens/about.dart';
 import 'package:todoapp/screens/home.dart';
+import 'package:todoapp/screens/notification.dart';
+import 'package:todoapp/screens/setting.dart';
 import 'package:todoapp/screens/updateTodoPage.dart';
 
 class AppRoutes {
@@ -27,8 +30,25 @@ class AppRoutes {
             currentDate: todo?.date,
             currentTime: todo?.time,
           );
-        },
+        },  
       ),
+
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationPage(),
+      ),
+
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const Setting()
+      ),
+
+      GoRoute(
+        path: '/about', 
+        builder: (context, state) => const About()
+        ),
     ],
   );
 }
+
+

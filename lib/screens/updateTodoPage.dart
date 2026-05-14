@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todoapp/color_theam/color.dart';
 
 class UpdateTodoPage extends StatefulWidget {
   final String currentText;
@@ -25,6 +27,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
   late TextEditingController _noteController;
   late DateTime? _date;
   late TimeOfDay? _time;
+  bool _darkMode = false;
+  late Box _settingsBox;
 
   @override
   void initState() {
@@ -33,6 +37,22 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
     _noteController = TextEditingController(text: widget.currentNote ?? '');
     _date = widget.currentDate;
     _time = widget.currentTime;
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      if (!Hive.isBoxOpen('settings')) {
+        _settingsBox = await Hive.openBox('settings');
+      } else {
+        _settingsBox = Hive.box('settings');
+      }
+      setState(() {
+        _darkMode = _settingsBox.get('darkMode', defaultValue: false);
+      });
+    } catch (e) {
+      print('Error loading settings: $e');
+    }
   }
 
   @override
@@ -46,6 +66,9 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth >= 600;
+    final bgColor = getBGColor(_darkMode);
+    final textColor = getTextColor(_darkMode);
+    final cardColor = getCardColor(_darkMode);
 
     final horizontalPadding = isTablet ? screenWidth * 0.12 : 20.0;
     final titleFontSize = isTablet ? 24.0 : 20.0;
@@ -54,22 +77,21 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
     final buttonFontSize = isTablet ? 16.0 : 14.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: bgColor,
         elevation: 0.5,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textColor),
+          onPressed: () => context.go('/'),
         ),
         title: Text(
           'Update Todo',
           style: TextStyle(
             fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: textColor,
           ),
         ),
       ),
@@ -82,16 +104,18 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                 vertical: 24,
               ),
               child: ConstrainedBox(
-                constraints:
-                    BoxConstraints(minHeight: constraints.maxHeight - 48),
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 48,
+                ),
                 child: IntrinsicHeight(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // ── Todo Title ──────────────────────────────────────
-                      _buildLabel('Todo Title', labelFontSize),
+                      _buildLabel('Todo Title', labelFontSize,textColor),
                       const SizedBox(height: 8),
                       _buildInputCard(
+                        cardColor: cardColor,
                         child: TextFormField(
                           controller: _controller,
                           decoration: const InputDecoration(
@@ -102,17 +126,20 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                           ),
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: textColor,
+                          ),
                         ),
                       ),
 
                       const SizedBox(height: 20),
 
                       // ── Note ────────────────────────────────────────────
-                      _buildLabel('Note', labelFontSize),
+                      _buildLabel('Note', labelFontSize,textColor),
                       const SizedBox(height: 8),
                       _buildInputCard(
+                        cardColor: cardColor,
                         child: TextFormField(
                           controller: _noteController,
                           decoration: const InputDecoration(
@@ -123,8 +150,10 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                           ),
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: textColor,
+                          ),
                         ),
                       ),
 
@@ -134,17 +163,17 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                       isTablet
                           ? Row(
                               children: [
-                                Expanded(child: _buildDateField(labelFontSize)),
+                                Expanded(child: _buildDateField(labelFontSize,textColor,cardColor)),
                                 const SizedBox(width: 16),
-                                Expanded(child: _buildTimeField(labelFontSize)),
+                                Expanded(child: _buildTimeField(labelFontSize,textColor,cardColor)),
                               ],
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildDateField(labelFontSize),
+                                _buildDateField(labelFontSize,textColor,cardColor),
                                 const SizedBox(height: 20),
-                                _buildTimeField(labelFontSize),
+                                _buildTimeField(labelFontSize,textColor,cardColor),
                               ],
                             ),
 
@@ -161,7 +190,9 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.blue,
                                   side: const BorderSide(
-                                      color: Colors.blue, width: 1.5),
+                                    color: Colors.blue,
+                                    width: 1.5,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -217,7 +248,8 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                                             ),
                                           ),
                                           content: const Text(
-                                              'Please enter a Todo item.'),
+                                            'Please enter a Todo item.',
+                                          ),
                                           actions: [
                                             TextButton(
                                               child: const Text('OK'),
@@ -260,24 +292,24 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
     );
   }
 
-  Widget _buildLabel(String text, double fontSize) {
+  Widget _buildLabel(String text, double fontSize,textColor) {
     return Text(
       text,
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.w600,
-        color: Colors.black54,
+        color: textColor,
         letterSpacing: 0.3,
       ),
     );
   }
 
-  Widget _buildInputCard({required Widget child}) {
+  Widget _buildInputCard({required Widget child, Color? cardColor}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor ,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -292,16 +324,16 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
     );
   }
 
-  Widget _buildDateField(double labelFontSize) {
+  Widget _buildDateField(double labelFontSize, Color textColor, Color cardColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel('Date', labelFontSize),
+        _buildLabel('Date', labelFontSize, textColor),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -314,8 +346,9 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
           ),
           child: DateTimeFormField(
             initialValue: _date,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Select date',
+              hintStyle: TextStyle(color:textColor),
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
             ),
@@ -333,16 +366,16 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
     );
   }
 
-  Widget _buildTimeField(double labelFontSize) {
+  Widget _buildTimeField(double labelFontSize,textColor, Color cardColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel('Time', labelFontSize),
+        _buildLabel('Time', labelFontSize,textColor),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -363,8 +396,9 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                     _time!.minute,
                   )
                 : null,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Select time',
+               hintStyle: TextStyle(color:textColor),
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
             ),

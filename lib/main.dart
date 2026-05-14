@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:todoapp/rout/rout.dart';
-import 'package:timezone/data/latest.dart' as tzdata; // ← change tz to tzdata
-import 'package:timezone/timezone.dart' as tz; // ← keep as tz
+import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:todoapp/model/time_of_day_adapter.dart';
 import 'package:todoapp/model/todo.dart';
-import 'package:todoapp/screens/home.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todoapp/service/notification_service.dart';
 
