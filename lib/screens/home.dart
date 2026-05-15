@@ -66,45 +66,53 @@ class _HomeState extends State<Home> {
       drawer: const DrawerWidget(),
       appBar: _buildAppBar(isTablet, bgColor, textColor),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── List area ────────────────────────────────────────────────────
+          // ── Scrollable list with search + label as header ─────────────
           Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                  horizontalPadding, 15, horizontalPadding, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSearchBox(textColor),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6, bottom: 10),
-                    child: Text(
-                      'All Todos',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
+            child: CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                      horizontalPadding, 15, horizontalPadding, 0),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      // Search box — scrolls with the list
+                      _buildSearchBox(textColor),
+
+                      // "All Todos" label — scrolls with the list
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, bottom: 10),
+                        child: Text(
+                          'All Todos',
+                          style: TextStyle(
+                            fontSize: isTablet ? 22 : 18,
+                            fontWeight: FontWeight.w500,
+                            color: textColor,
+                          ),
+                        ),
                       ),
-                    ),
+                    ]),
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      itemCount: _foundTodo.length,
-                      itemBuilder: (context, index) {
-                        final todo = _foundTodo.reversed.toList()[index];
-                        return ToDoItem(
-                          todo: todo,
-                          onToDoChanged: _handleToDoChange,
-                          onDeleteItem: _handleDeleteItem,
-                          onUpdateItem: _updateTodoItem,
-                        );
-                      },
-                    ),
+                ),
+
+                // Todo items
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                      horizontalPadding, 0, horizontalPadding, 12),
+                  sliver: SliverList.builder(
+                    itemCount: _foundTodo.length,
+                    itemBuilder: (context, index) {
+                      final todo = _foundTodo.reversed.toList()[index];
+                      return ToDoItem(
+                        todo: todo,
+                        onToDoChanged: _handleToDoChange,
+                        onDeleteItem: _handleDeleteItem,
+                        onUpdateItem: _updateTodoItem,
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
@@ -152,14 +160,18 @@ class _HomeState extends State<Home> {
                         Text(
                           'Add New Todo',
                           style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: textColor),
+                            fontSize: isTablet ? 16 : 15,
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           'Tap to create a new task',
-                          style: TextStyle(fontSize: 12, color: subtitleColor),
+                          style: TextStyle(
+                            fontSize: isTablet ? 13 : 12,
+                            color: subtitleColor,
+                          ),
                         ),
                       ],
                     ),
@@ -178,11 +190,13 @@ class _HomeState extends State<Home> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       elevation: 0,
-                      textStyle: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w600),
+                      textStyle: TextStyle(
+                        fontSize: isTablet ? 15 : 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     child: const Text('Add'),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -217,6 +231,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildSearchBox(Color textColor) {
+    final isTablet = MediaQuery.of(context).size.width >= 600;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 1),
@@ -234,17 +249,23 @@ class _HomeState extends State<Home> {
       ),
       child: Row(
         children: [
-          Icon(Icons.search, color: textColor),
+          Icon(Icons.search, color: textColor, size: isTablet ? 24 : 22),
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
               onChanged: _searchTodo,
+              style: TextStyle(
+                color: textColor,
+                fontSize: isTablet ? 16 : 14,
+              ),
               decoration: InputDecoration(
                 hintText: 'Search',
                 border: InputBorder.none,
-                hintStyle: TextStyle(color: textColor.withOpacity(0.5)),
+                hintStyle: TextStyle(
+                  color: textColor.withOpacity(0.5),
+                  fontSize: isTablet ? 16 : 14,
+                ),
               ),
-              style: TextStyle(color: textColor),
             ),
           ),
         ],
@@ -261,13 +282,8 @@ class _HomeState extends State<Home> {
       // LEFT ICON
       leading: Builder(
         builder: (context) => IconButton(
-          icon: Icon(
-            Icons.menu,
-            color: textColor,
-          ),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
+          icon: Icon(Icons.menu, color: textColor),
+          onPressed: () => Scaffold.of(context).openDrawer(),
         ),
       ),
 

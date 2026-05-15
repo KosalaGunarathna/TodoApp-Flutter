@@ -118,6 +118,7 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                         cardColor: cardColor,
                         child: TextFormField(
                           controller: _controller,
+                          cursorColor: textColor,
                           decoration: const InputDecoration(
                             hintText: 'Enter todo item...',
                             hintStyle: TextStyle(color: Colors.black38),
@@ -142,6 +143,7 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                         cardColor: cardColor,
                         child: TextFormField(
                           controller: _noteController,
+                          cursorColor: textColor,
                           decoration: const InputDecoration(
                             hintText: 'Add a note (optional)...',
                             hintStyle: TextStyle(color: Colors.black38),
@@ -346,6 +348,7 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
           ),
           child: DateTimeFormField(
             initialValue: _date,
+            style: TextStyle(color: textColor),
             decoration: InputDecoration(
               hintText: 'Select date',
               hintStyle: TextStyle(color:textColor),
@@ -396,6 +399,7 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                     _time!.minute,
                   )
                 : null,
+            style: TextStyle(color: textColor),
             decoration: InputDecoration(
               hintText: 'Select time',
                hintStyle: TextStyle(color:textColor),

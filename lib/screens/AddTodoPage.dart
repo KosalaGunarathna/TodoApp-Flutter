@@ -103,6 +103,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         shadowDarkMode: _darkMode,
                         child: TextFormField(
                           controller: _controller,
+                          cursorColor: textColor,
                           decoration: InputDecoration(
                             hintText: 'Enter todo item...',
                             hintStyle: TextStyle(color: textColor),
@@ -111,9 +112,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
                           ),
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
-                            color: Colors.black87,
+                            color: textColor,
                           ),
                         ),
                       ),
@@ -130,6 +131,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         shadowDarkMode: _darkMode,
                         child: TextFormField(
                           controller: _notecontroller,
+                          cursorColor: textColor,
                           decoration: InputDecoration(
                             hintText: 'Add a note (optional)...',
                             hintStyle: TextStyle(color: textColor),
@@ -138,9 +140,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
                           ),
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
-                            color: Colors.black87,
+                            color: textColor,
                           ),
                         ),
                       ),
@@ -334,6 +336,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
             ],
           ),
           child: DateTimeFormField(
+            style: TextStyle(color: textColor),
             decoration: InputDecoration(
               hintText: 'Select date',
               hintStyle: TextStyle(color:textColor),
@@ -375,6 +378,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
             ],
           ),
           child: DateTimeFormField(
+            style: TextStyle(color: textColor),
             decoration: InputDecoration(
               hintText: 'Select time',
               hintStyle: TextStyle(color:textColor),

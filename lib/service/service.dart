@@ -31,30 +31,29 @@ void addTodo(String todoText, String todoNote, DateTime? date, TimeOfDay? time) 
   }
 }
 
-  void deleteTodo(String id) {
+  Future<void> deleteTodo(String id) async {
     final index = todoBox.values.toList().indexWhere((item) => item.id == id);
     if (index != -1) {
       todoBox.deleteAt(index);
+      await NotificationService.cancelNotification(id); 
     }
   }
 
-  void updateTodo(
+  Future<void> updateTodo(
   String id,
   String updatedText,
   String updatedNote,
   DateTime? date,
   TimeOfDay? time,
 ) async {
-
   final index = todoBox.values.toList().indexWhere((item) => item.id == id);
 
   if (index != -1) {
     final todo = todoBox.getAt(index);
 
     if (todo != null) {
-
-      // Cancel old notification
-      await NotificationService.cancelNotification(todo.id.hashCode);
+      // Cancel old notification — pass id directly as String
+      await NotificationService.cancelNotification(id);
 
       // Update values
       todo.todoText = updatedText;
@@ -64,7 +63,7 @@ void addTodo(String todoText, String todoNote, DateTime? date, TimeOfDay? time) 
 
       await todo.save();
 
-      // Schedule new notification
+      // Schedule new notification with updated time
       await NotificationService.scheduleTodo(todo);
     }
   }
