@@ -1,27 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:todoapp/color_theam/color.dart';
 import 'package:todoapp/model/todo.dart';
 import 'package:custom_check_box/custom_check_box.dart';
-import 'package:todoapp/screens/UpdateTodoPage.dart';
 
-class ToDoItem extends StatelessWidget {
+import 'package:hive_flutter/hive_flutter.dart';
+
+class ToDoItem extends StatefulWidget {
   final ToDo todo;
+  // ignore: prefer_typing_uninitialized_variables
   final onDeleteItem;
   final void Function(ToDo todo) onToDoChanged;
   final void Function(String updatedText, String updateNote,
       DateTime? updateDate, TimeOfDay? updateTime, String id) onUpdateItem;
 
-  ToDoItem({
+  const ToDoItem({
     super.key,
     required this.todo,
     required this.onDeleteItem,
     required this.onToDoChanged,
     required this.onUpdateItem,
-    
   });
 
   @override
+  State<ToDoItem> createState() => _ToDoItemState();
+}
+
+class _ToDoItemState extends State<ToDoItem> {
+  bool _darkMode = false;
+  late Box _settingsBox;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      if (!Hive.isBoxOpen('settings')) {
+        _settingsBox = await Hive.openBox('settings');
+      } else {
+        _settingsBox = Hive.box('settings');
+      }
+      setState(() {
+        _darkMode = _settingsBox.get('darkMode', defaultValue: false);
+      });
+    } catch (e) {
+      print('Error loading settings: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final cardColor = getCardColor(_darkMode);
+    final textColor = getTextColor(_darkMode);
+    final subtitleColor = getSubtitleColor(_darkMode);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       child: ListTile(
@@ -29,45 +64,33 @@ class ToDoItem extends StatelessWidget {
           left: 5,
         ),
 
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UpdateTodoPage(
-                currentText: todo.todoText!,
-                currentNote: todo.todoNote,
-                currentDate: todo.date,
-                currentTime: todo.time,
-              ),
-            ),
-          ).then((updatedText) {
-            print(updatedText['todoText']);
-            print(updatedText['todoNote']);
-            if (updatedText['todoText'] != null && updatedText is Map) {
-              onUpdateItem(
-                updatedText['todoText'],
-                updatedText['todoNote'],
-                updatedText['date'],
-                updatedText['time'],
-                todo.id!,
-              );
-            }
-          });
-        },
+        onTap: () async {
+        final result = await context.push('/update', extra: widget.todo);
+        
+        if (result is Map) {
+          widget.onUpdateItem(
+            result['todoText'],
+            result['todoNote'],
+            result['date'],
+            result['time'],
+            widget.todo.id!,
+          );
+        }
+      },
 
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        tileColor: Colors.white,
+        tileColor: cardColor,
 
         // ✅ Checkbox icon
         leading: CustomCheckBox(
-          value: todo.isDone,
+          value: widget.todo.isDone,
           checkedFillColor: Colors.blue,
           checkBoxSize: 15,
           borderRadius: 3,
           onChanged: (val) {
-            onToDoChanged(todo);
+            widget.onToDoChanged(widget.todo);
           },
         ),
 
@@ -75,25 +98,24 @@ class ToDoItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              todo.todoText!,
+              widget.todo.todoText!,
               style: TextStyle(
                 fontSize: 16,
-                color: tdBlack,
-                decoration: todo.isDone ? TextDecoration.lineThrough : null,
+                color: textColor,
+                decoration: widget.todo.isDone ? TextDecoration.lineThrough : null,
               ),
             ),
             const SizedBox(height: 5),
 
             // Text for todo note
-            todo.todoNote == null || todo.todoNote!.isEmpty
+            widget.todo.todoNote == null || widget.todo.todoNote!.isEmpty
                 ? const SizedBox.shrink()
                 : Text(
-                    todo.todoNote!,
+                    widget.todo.todoNote!,
                     style: TextStyle(
                       fontSize: 14,
-                      color: tdGrey,
-                      decoration:
-                          todo.isDone ? TextDecoration.lineThrough : null,
+                      color: subtitleColor,
+                      decoration: widget.todo.isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
           ],
@@ -105,30 +127,30 @@ class ToDoItem extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: Column(
             children: [
-              todo.time == null
+              widget.todo.time == null
                   ? const SizedBox.shrink() // hides the widget, takes no space
                   : Text(
-                      todo.time!.format(context),
+                      widget.todo.time.toString().substring(10, 15),
                       style: TextStyle(
                         fontSize: 12,
                         color: tdGrey,
                         decoration:
-                            todo.isDone ? TextDecoration.lineThrough : null,
+                            widget.todo.isDone ? TextDecoration.lineThrough : null,
                       ),
                     ),
 
               const SizedBox(height: 2),
 
               // ✅ date
-              todo.date == null
+              widget.todo.date == null
                   ? const SizedBox.shrink()
                   : Text(
-                      '${todo.date!.year}-${todo.date!.month.toString().padLeft(2, '0')}-${todo.date!.day.toString().padLeft(2, '0')}',
+                      '${widget.todo.date!.year}-${widget.todo.date!.month.toString().padLeft(2, '0')}-${widget.todo.date!.day.toString().padLeft(2, '0')}',
                       style: TextStyle(
                         fontSize: 12,
                         color: tdGrey,
                         decoration:
-                            todo.isDone ? TextDecoration.lineThrough : null,
+                            widget.todo.isDone ? TextDecoration.lineThrough : null,
                       ),
                     )
             ],
@@ -155,7 +177,7 @@ class ToDoItem extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          onDeleteItem(todo.id);
+                          widget.onDeleteItem(widget.todo.id);
                           Navigator.of(context).pop(); // Close the dialog
                         },
                         child: const Text('Delete',

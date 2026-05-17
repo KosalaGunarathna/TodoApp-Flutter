@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:todoapp/rout/rout.dart';
+import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:todoapp/model/time_of_day_adapter.dart';
 import 'package:todoapp/model/todo.dart';
-import 'package:todoapp/screens/home.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todoapp/service/notification_service.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
+
+  tzdata.initializeTimeZones(); // ← tzdata
 
   Hive.registerAdapter(ToDoAdapter());
   Hive.registerAdapter(TimeOfDayAdapter());
+
   await Hive.openBox<ToDo>('todos');
+
+  await NotificationService.init();
 
   runApp(const MyApp());
 }
@@ -27,10 +35,13 @@ class MyApp extends StatelessWidget {
         statusBarColor: Colors.transparent, // Make status bar transparent
       ),
     );
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Todo App',
-      home: Home(),
+      routerConfig: AppRoutes.routes,
+      builder: (context, child) => SafeArea(
+        child: child!,
+      ),
     );
   }
 }
