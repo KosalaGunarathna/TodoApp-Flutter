@@ -12,67 +12,74 @@ class TodoService {
     return todoBox.values.toList();
   }
 
-void addTodo(String todoText, String todoNote, DateTime? date, TimeOfDay? time) async {
-  if (todoText.isNotEmpty) {
+  Future<void> addTodo(
+      String todoText, String todoNote, DateTime? date, TimeOfDay? time) async {
+    if (todoText.isNotEmpty) {
+      final newTodo = ToDo(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        todoText: todoText,
+        todoNote: todoNote,
+        date: date,
+        time: time,
+      );
 
-    final newTodo = ToDo(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      todoText: todoText,
-      todoNote: todoNote,
-      date: date,
-      time: time,
-    );
+      // Persist with id as key
+      await todoBox.put(newTodo.id, newTodo);
 
-    final box = Hive.box<ToDo>('todos');
-    box.add(newTodo);
+      // Debug log
+      try {
+        print('Todo added: id=${newTodo.id}, boxLength=${todoBox.length}');
+      } catch (_) {}
 
-    // 🔥 AUTO SCHEDULE NOTIFICATION HERE
-    await NotificationService.scheduleTodo(newTodo);
+      // Schedule notification
+      await NotificationService.scheduleTodo(newTodo);
+    }
   }
-}
 
   Future<void> deleteTodo(String id) async {
-    final index = todoBox.values.toList().indexWhere((item) => item.id == id);
-    if (index != -1) {
-      todoBox.deleteAt(index);
-      await NotificationService.cancelNotification(id); 
-    }
+    // Delete by key (id) to match put/get usage
+    await todoBox.delete(id);
+    await NotificationService.cancelNotification(id);
   }
 
   Future<void> updateTodo(
-  String id,
-  String updatedText,
-  String updatedNote,
-  DateTime? date,
-  TimeOfDay? time,
-) async {
-  final index = todoBox.values.toList().indexWhere((item) => item.id == id);
+    String id,
+    String updatedText,
+    String updatedNote,
+    DateTime? date,
+    TimeOfDay? time,
+  ) async {
+    final todo = todoBox.get(id);
+    if (todo == null) return;
 
-  if (index != -1) {
-    final todo = todoBox.getAt(index);
+    // Cancel old notification
+    await NotificationService.cancelNotification(id);
 
-    if (todo != null) {
-      // Cancel old notification — pass id directly as String
-      await NotificationService.cancelNotification(id);
+    // Update fields
+    todo.todoText = updatedText;
+    todo.todoNote = updatedNote;
+    todo.date = date;
+    todo.time = time;
 
-      // Update values
-      todo.todoText = updatedText;
-      todo.todoNote = updatedNote;
-      todo.date = date;
-      todo.time = time;
+    // Persist updated todo
+    await todoBox.put(id, todo);
 
-      await todo.save();
-
-      // Schedule new notification with updated time
-      await NotificationService.scheduleTodo(todo);
-    }
+    // Schedule new notification
+    await NotificationService.scheduleTodo(todo);
+   
   }
-}
 
   List<ToDo> searchTodos(String keyword) {
     if (keyword.isEmpty) return getAllTodos();
     return todoBox.values
-        .where((item) => item.todoText!.toLowerCase().contains(keyword.toLowerCase()))
+        .where((item) =>
+            item.todoText!.toLowerCase().contains(keyword.toLowerCase()))
         .toList();
+  }
+
+  Future<void> deleteAllTodos() async {
+  await NotificationService.plugin.cancelAll(); // cancel all notifications
+  await todoBox.clear();                        // delete all from Hive
+
   }
 }

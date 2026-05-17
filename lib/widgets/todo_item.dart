@@ -8,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class ToDoItem extends StatefulWidget {
   final ToDo todo;
+  // ignore: prefer_typing_uninitialized_variables
   final onDeleteItem;
   final void Function(ToDo todo) onToDoChanged;
   final void Function(String updatedText, String updateNote,
@@ -63,21 +64,19 @@ class _ToDoItemState extends State<ToDoItem> {
           left: 5,
         ),
 
-        onTap: () {
-          context.push('/update', extra: widget.todo).then((updatedText) {
-            if (updatedText is Map) {
-              print(updatedText['todoText']);
-              print(updatedText['todoNote']);
-              widget.onUpdateItem(
-                updatedText['todoText'],
-                updatedText['todoNote'],
-                updatedText['date'],
-                updatedText['time'],
-                widget.todo.id!,
-              );
-            }
-          });
-        },
+        onTap: () async {
+        final result = await context.push('/update', extra: widget.todo);
+        
+        if (result is Map) {
+          widget.onUpdateItem(
+            result['todoText'],
+            result['todoNote'],
+            result['date'],
+            result['time'],
+            widget.todo.id!,
+          );
+        }
+      },
 
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),

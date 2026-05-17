@@ -39,6 +39,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Todo App',
       routerConfig: AppRoutes.routes,
+      builder: (context, child) => SafeArea(
+        child: child!,
+      ),
     );
   }
 }

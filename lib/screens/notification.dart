@@ -89,7 +89,8 @@ class _NotificationPageState extends State<NotificationPage> {
           content: Text('Reminder updated to ${_formatReminder(minutes)}'),
           backgroundColor: const Color(0xFF2196F3),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     }
@@ -133,137 +134,125 @@ class _NotificationPageState extends State<NotificationPage> {
               Text(
                 'Set how long before the task you want to be reminded.',
                 style: TextStyle(color: subtitleColor, fontSize: 13),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+
+              // Hours Row
+             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Hours',
+                  style: TextStyle(fontSize: 13, color: subtitleColor),
+                ),
+                const SizedBox(width: 20),
+                _counterButton(
+                  icon: Icons.remove,
+                  onTap: () {
+                    if (tempHours > 0) setDialogState(() => tempHours--);
+                  },
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$tempHours',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _counterButton(
+                  icon: Icons.add,
+                  onTap: () {
+                    if (tempHours < 23) setDialogState(() => tempHours++);
+                  },
+                ),
+              ],
+            ),
+
+              const SizedBox(height: 16),
+
+              // Minutes Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Column(
-                    children: [
-                      Text('Hours',
-                          style:
-                              TextStyle(fontSize: 12, color: subtitleColor)),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          _counterButton(
-                            icon: Icons.remove,
-                            onTap: () {
-                              if (tempHours > 0)
-                                setDialogState(() => tempHours--);
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              color: bgColor,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '$tempHours',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: textColor,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          _counterButton(
-                            icon: Icons.add,
-                            onTap: () {
-                              if (tempHours < 23)
-                                setDialogState(() => tempHours++);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+                  Text(
+                    'Minutes',
+                    style: TextStyle(fontSize: 13, color: subtitleColor),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 20, left: 12, right: 12),
+                  const SizedBox(width: 8),
+                  _counterButton(
+                    icon: Icons.remove,
+                    onTap: () {
+                      if (tempMinutes > 0) {
+                        setDialogState(() {
+                          tempMinutes -= 5;
+                          if (tempMinutes < 0) tempMinutes = 0;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    alignment: Alignment.center,
                     child: Text(
-                      ':',
+                      tempMinutes.toString().padLeft(2, '0'),
                       style: TextStyle(
-                        fontSize: 26,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: textColor,
                       ),
                     ),
                   ),
-                  Column(
-                    children: [
-                      Text('Minutes',
-                          style:
-                              TextStyle(fontSize: 12, color: subtitleColor)),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          _counterButton(
-                            icon: Icons.remove,
-                            onTap: () {
-                              if (tempMinutes > 0) {
-                                setDialogState(() => tempMinutes -= 5);
-                                if (tempMinutes < 0) tempMinutes = 0;
-                              }
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              color: bgColor,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              tempMinutes.toString().padLeft(2, '0'),
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: textColor,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          _counterButton(
-                            icon: Icons.add,
-                            onTap: () {
-                              if (tempMinutes < 55)
-                                setDialogState(() => tempMinutes += 5);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+                  const SizedBox(width: 8),
+                  _counterButton(
+                    icon: Icons.add,
+                    onTap: () {
+                      if (tempMinutes < 55) setDialogState(() => tempMinutes += 5);
+                    },
                   ),
                 ],
               ),
+
+              const SizedBox(height: 8),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child:
-                  Text('Cancel', style: TextStyle(color: subtitleColor)),
+              child: Text('Cancel', style: TextStyle(color: subtitleColor)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2196F3),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: () {
                 final total = (tempHours * 60) + tempMinutes;
                 if (total == 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Please set at least 5 minutes')),
+                      content: Text('Please set at least 5 minutes'),
+                    ),
                   );
                   return;
                 }
@@ -272,11 +261,10 @@ class _NotificationPageState extends State<NotificationPage> {
                   _customMinutes = tempMinutes;
                   _isCustom = true;
                 });
-                _saveReminderTime(total); // ← this now reschedules everything
+                _saveReminderTime(total);
                 Navigator.pop(ctx);
               },
-              child:
-                  const Text('Set', style: TextStyle(color: Colors.white)),
+              child: const Text('Set', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -284,8 +272,7 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  Widget _counterButton(
-      {required IconData icon, required VoidCallback onTap}) {
+  Widget _counterButton({required IconData icon, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -362,8 +349,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     children: [
                       const Text(
                         'Current Reminder',
-                        style:
-                            TextStyle(color: Colors.white70, fontSize: 12),
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -399,8 +385,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black
-                        .withOpacity(_darkMode ? 0.3 : 0.05),
+                    color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -427,12 +412,10 @@ class _NotificationPageState extends State<NotificationPage> {
                           topRight: index == 0
                               ? const Radius.circular(20)
                               : Radius.zero,
-                          bottomLeft: isLast
-                              ? const Radius.circular(20)
-                              : Radius.zero,
-                          bottomRight: isLast
-                              ? const Radius.circular(20)
-                              : Radius.zero,
+                          bottomLeft:
+                              isLast ? const Radius.circular(20) : Radius.zero,
+                          bottomRight:
+                              isLast ? const Radius.circular(20) : Radius.zero,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -443,9 +426,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                 width: 42,
                                 height: 42,
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? Colors.blue
-                                      : Colors.grey,
+                                  color: isSelected ? Colors.blue : Colors.grey,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(
@@ -477,10 +458,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         ),
                       ),
                       if (!isLast)
-                        Divider(
-                            height: 1,
-                            indent: 72,
-                            color: dividerColor),
+                        Divider(height: 1, indent: 72, color: dividerColor),
                     ],
                   );
                 }),
@@ -504,19 +482,17 @@ class _NotificationPageState extends State<NotificationPage> {
               onTap: _showCustomDialog,
               borderRadius: BorderRadius.circular(20),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
                   color: cardColor,
                   borderRadius: BorderRadius.circular(20),
                   border: _isCustom
-                      ? Border.all(
-                          color: const Color(0xFF2196F3), width: 2)
+                      ? Border.all(color: const Color(0xFF2196F3), width: 2)
                       : null,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black
-                          .withOpacity(_darkMode ? 0.3 : 0.05),
+                      color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -528,9 +504,8 @@ class _NotificationPageState extends State<NotificationPage> {
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: _isCustom
-                            ? const Color(0xFF2196F3)
-                            : Colors.grey,
+                        color:
+                            _isCustom ? const Color(0xFF2196F3) : Colors.grey,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -548,9 +523,8 @@ class _NotificationPageState extends State<NotificationPage> {
                             'Custom Time',
                             style: TextStyle(
                               fontSize: 15,
-                              fontWeight: _isCustom
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
+                              fontWeight:
+                                  _isCustom ? FontWeight.w700 : FontWeight.w500,
                               color: textColor,
                             ),
                           ),
@@ -558,8 +532,8 @@ class _NotificationPageState extends State<NotificationPage> {
                             _isCustom
                                 ? _formatReminder(_selectedMinutes)
                                 : 'Set your own reminder time',
-                            style: TextStyle(
-                                fontSize: 12, color: subtitleColor),
+                            style:
+                                TextStyle(fontSize: 12, color: subtitleColor),
                           ),
                         ],
                       ),
@@ -568,9 +542,8 @@ class _NotificationPageState extends State<NotificationPage> {
                       _isCustom
                           ? Icons.check_circle_rounded
                           : Icons.chevron_right_rounded,
-                      color: _isCustom
-                          ? const Color(0xFF2196F3)
-                          : subtitleColor,
+                      color:
+                          _isCustom ? const Color(0xFF2196F3) : subtitleColor,
                       size: 22,
                     ),
                   ],

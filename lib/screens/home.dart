@@ -20,6 +20,7 @@ class _HomeState extends State<Home> {
   late Box _settingsBox;
   List<ToDo> _foundTodo = [];
   bool _darkMode = false;
+  bool notificationsEnabled = true;
 
   @override
   void initState() {
@@ -39,6 +40,8 @@ class _HomeState extends State<Home> {
       }
       setState(() {
         _darkMode = _settingsBox.get('darkMode', defaultValue: false);
+        notificationsEnabled =
+            _settingsBox.get('notificationsEnabled', defaultValue: true);
       });
     } catch (e) {
       print('Error loading settings: $e');
@@ -83,7 +86,7 @@ class _HomeState extends State<Home> {
                       Padding(
                         padding: const EdgeInsets.only(top: 6, bottom: 10),
                         child: Text(
-                          'All Todos',
+                          'All Tasks',
                           style: TextStyle(
                             fontSize: isTablet ? 22 : 18,
                             fontWeight: FontWeight.w500,
@@ -158,7 +161,7 @@ class _HomeState extends State<Home> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Add New Todo',
+                          'Add New Task',
                           style: TextStyle(
                             fontSize: isTablet ? 16 : 15,
                             fontWeight: FontWeight.w600,
@@ -179,8 +182,23 @@ class _HomeState extends State<Home> {
 
                   // Add button
                   ElevatedButton(
-                    onPressed: () {
-                      context.push('/add');
+                    onPressed: () async {
+                      final result = await context.push('/add');
+                      if (result != null && result is Map) {
+                        print('Add page returned: $result');
+                        final todoText = result['todoText'] as String? ?? '';
+                        final todoNote = result['todoNote'] as String? ?? '';
+                        final date = result['date'] as DateTime?;
+                        final time = result['time'] as TimeOfDay?;
+                        if (todoText.isNotEmpty) {
+                          await todoService.addTodo(
+                              todoText, todoNote, date, time);
+                          try {
+                            print('After add, box length: ${todoBox.length}');
+                          } catch (_) {}
+                          _loadTodos();
+                        }
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -225,9 +243,13 @@ class _HomeState extends State<Home> {
   }
 
   void _updateTodoItem(String updatedText, String updatedNote, DateTime? date,
-      TimeOfDay? time, String id) {
-    todoService.updateTodo(id, updatedText, updatedNote, date, time);
-    _loadTodos();
+      TimeOfDay? time, String id) async {
+    await todoService.updateTodo(id, updatedText, updatedNote, date, time);
+    if (mounted) {
+      setState(() {
+        _foundTodo = todoService.getAllTodos(); // refresh list directly here
+      });
+    }
   }
 
   Widget _buildSearchBox(Color textColor) {
@@ -289,7 +311,7 @@ class _HomeState extends State<Home> {
 
       // CENTER TITLE
       title: Text(
-        'Todo List',
+        'Task List',
         style: TextStyle(
           color: textColor,
           fontSize: isTablet ? 24 : 20,
@@ -299,19 +321,14 @@ class _HomeState extends State<Home> {
 
       // RIGHT SIDE
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: SizedBox(
-            height: isTablet ? 36 : 28,
-            width: isTablet ? 36 : 28,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                'assets/images/profile.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
+        IconButton(
+          onPressed: () => context.go('/notifications'),
+          icon: Icon(
+            notificationsEnabled
+                ? Icons.notifications
+                : Icons.notifications_off,
           ),
+          color: textColor,
         ),
       ],
     );

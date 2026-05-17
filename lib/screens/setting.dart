@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todoapp/color_theam/color.dart';
+import 'package:todoapp/model/todo.dart';
+import 'package:todoapp/service/notification_service.dart';
+import 'package:todoapp/service/service.dart';
 
 class Setting extends StatefulWidget {
   const Setting({super.key});
@@ -13,9 +16,8 @@ class Setting extends StatefulWidget {
 class _SettingState extends State<Setting> {
   late Box _settingsBox;
   bool _notificationsEnabled = true;
-  bool _soundEnabled = true;
-  bool _vibrationEnabled = true;
   bool _darkMode = false;
+  
 
   @override
   void initState() {
@@ -33,9 +35,6 @@ class _SettingState extends State<Setting> {
       setState(() {
         _notificationsEnabled =
             _settingsBox.get('notificationsEnabled', defaultValue: true);
-        _soundEnabled = _settingsBox.get('soundEnabled', defaultValue: true);
-        _vibrationEnabled =
-            _settingsBox.get('vibrationEnabled', defaultValue: true);
         _darkMode = _settingsBox.get('darkMode', defaultValue: false);
       });
     } catch (e) {
@@ -45,8 +44,6 @@ class _SettingState extends State<Setting> {
 
   @override
   void dispose() {
-    // Don't close the box here - it may be needed by other screens
-    // Just ensure we're not holding any references
     super.dispose();
   }
 
@@ -137,43 +134,19 @@ class _SettingState extends State<Setting> {
                   value: _notificationsEnabled,
                   textColor: textColor,
                   subtitleColor: subtitleColor,
-                  onChanged: (val) {
+                  onChanged: (val) async {
                     setState(() => _notificationsEnabled = val);
                     _saveSetting('notificationsEnabled', val);
+
+                    final todos = Hive.box<ToDo>('todos').values.toList();
+                    if (val) {
+                      await NotificationService.rescheduleAll(todos); // turn ON → reschedule
+                    } else {
+                      await NotificationService.plugin.cancelAll();   // turn OFF → cancel all
+                    }
                   },
                 ),
-                _divider(dividerColor),
-                _toggleItem(
-                  icon: Icons.volume_up_rounded,
-                  iconColor: tdIconSound,
-                  title: 'Sound',
-                  subtitle: 'Play sound with notification',
-                  value: _soundEnabled,
-                  textColor: textColor,
-                  subtitleColor: subtitleColor,
-                  onChanged: _notificationsEnabled
-                      ? (val) {
-                          setState(() => _soundEnabled = val);
-                          _saveSetting('soundEnabled', val);
-                        }
-                      : null,
-                ),
-                _divider(dividerColor),
-                _toggleItem(
-                  icon: Icons.vibration_rounded,
-                  iconColor: tdIconVibration,
-                  title: 'Vibration',
-                  subtitle: 'Vibrate with notification',
-                  value: _vibrationEnabled,
-                  textColor: textColor,
-                  subtitleColor: subtitleColor,
-                  onChanged: _notificationsEnabled
-                      ? (val) {
-                          setState(() => _vibrationEnabled = val);
-                          _saveSetting('vibrationEnabled', val);
-                        }
-                      : null,
-                ),
+                _divider(dividerColor),              
               ],
             ),
 
@@ -199,7 +172,7 @@ class _SettingState extends State<Setting> {
                 _navigationItem(
                   icon: Icons.delete_sweep_rounded,
                   iconColor: tdIconDelete,
-                  title: 'Clear All Todos',
+                  title: 'Clear All Tasks',
                   subtitle: 'Delete all tasks permanently',
                   textColor: textColor,
                   subtitleColor: subtitleColor,
@@ -247,32 +220,11 @@ class _SettingState extends State<Setting> {
             ),
             onPressed: () async {
               try {
-                final box = Hive.box('todos');
-                await box.clear();
-
-                // Close dialog first
-                if (ctx.mounted) {
-                  Navigator.of(ctx).pop();
-                }
-
-                // Show snackbar after closing dialog
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('All todos cleared'),
-                      backgroundColor: tdIconDelete,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                }
+                final todoService = TodoService(Hive.box<ToDo>('todos'));
+                await todoService.deleteAllTodos();
+                Navigator.of(ctx).pop();                      // close dialog
               } catch (e) {
                 print('Error clearing todos: $e');
-                if (ctx.mounted) {
-                  Navigator.of(ctx).pop();
-                }
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.white)),
@@ -422,5 +374,9 @@ class _SettingState extends State<Setting> {
 
   Widget _divider(Color dividerColor) {
     return Divider(height: 1, indent: 72, color: dividerColor);
-  }
+  } 
+
+  
+
+
 }

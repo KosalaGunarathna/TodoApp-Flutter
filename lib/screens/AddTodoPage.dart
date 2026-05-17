@@ -94,7 +94,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // ── Todo Title Field ────────────────────────────────
-                      _buildLabel('Todo Title', labelFontSize,textColor),
+                      _buildLabel('Your Task', labelFontSize,textColor),
                       const SizedBox(height: 8),
                       _buildInputCard(
                         bgColor: cardColor,
@@ -105,7 +105,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                           controller: _controller,
                           cursorColor: textColor,
                           decoration: InputDecoration(
-                            hintText: 'Enter todo item...',
+                            hintText: 'Enter your task...',
                             hintStyle: TextStyle(color: textColor),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
@@ -133,7 +133,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                           controller: _notecontroller,
                           cursorColor: textColor,
                           decoration: InputDecoration(
-                            hintText: 'Add a note (optional)...',
+                            hintText: 'Add a note (optional)',
                             hintStyle: TextStyle(color: textColor),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
@@ -235,7 +235,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           content: const Text(
-                                              'Please enter a Todo item.'),
+                                              'Please enter a your task.'),
                                           actions: [
                                             TextButton(
                                               child: const Text('OK'),
@@ -315,84 +315,176 @@ class _AddTodoPageState extends State<AddTodoPage> {
     );
   }
 
-  Widget _buildDateField(double labelFontSize, Color textColor, Color cardColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildLabel('Date', labelFontSize,textColor),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 10,
-                spreadRadius: 1,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: DateTimeFormField(
-            style: TextStyle(color: textColor),
-            decoration: InputDecoration(
-              hintText: 'Select date',
-              hintStyle: TextStyle(color:textColor),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-            ),
-            mode: DateTimeFieldPickerMode.date,
-            onChanged: (DateTime? value) {
-              setState(() {
-                _date = value != null
-                    ? DateTime(value.year, value.month, value.day)
-                    : null;
-              });
-            },
-          ),
-        ),
-      ],
-    );
-  }
+      Widget _buildDateField(double labelFontSize,Color textColor,Color cardColor,) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildLabel('Date', labelFontSize, textColor),
+          const SizedBox(height: 8),
 
-  Widget _buildTimeField(double labelFontSize, Color textColor, Color cardColor) {
+          GestureDetector(
+            onTap: () async {
+              final pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2024),
+                lastDate: DateTime(2100),
+
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: _darkMode
+                        ? ColorScheme.dark(
+                        primary: Colors.blue,
+                        onPrimary: Colors.white,
+                        surface: cardColor,
+                        onSurface: textColor,     
+                        onSecondaryContainer: Colors.white,
+                      )
+                    : ColorScheme.light(
+                        primary: Colors.blue,
+                        onPrimary: Colors.white,
+                        surface: cardColor,
+                        onSurface: textColor,  
+                        onSecondaryContainer: Colors.white,
+                      ),
+
+                    inputDecorationTheme:  InputDecorationTheme(
+                      hintStyle: TextStyle(color: textColor),
+                      labelStyle: TextStyle(color: textColor),
+                    ),
+
+                    textTheme: TextTheme(
+                      bodyMedium: TextStyle(color: textColor),
+                      bodyLarge: TextStyle(color: textColor),
+                    ),
+
+                    datePickerTheme: DatePickerThemeData(
+                    inputDecorationTheme: InputDecorationTheme(
+                      hintStyle: TextStyle(color: textColor),
+                      labelStyle: TextStyle(color: textColor),
+                      helperStyle: TextStyle(color: textColor),
+                    ),
+                  ),
+
+                    ),child: child!,
+                  );
+                },
+              );
+
+              if (pickedDate != null) {
+                setState(() {
+                  _date = pickedDate;
+                });
+              }
+            },
+
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+
+              child: Text(
+                _date == null
+                    ? 'Select date'
+                    : '${_date!.day}/${_date!.month}/${_date!.year}',
+
+                style: TextStyle(color: textColor),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    Widget _buildTimeField(double labelFontSize,Color textColor,Color cardColor,)
+   {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildLabel('Time', labelFontSize, textColor),
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 10,
-                spreadRadius: 1,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: DateTimeFormField(
-            style: TextStyle(color: textColor),
-            decoration: InputDecoration(
-              hintText: 'Select time',
-              hintStyle: TextStyle(color:textColor),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-            ),
-            mode: DateTimeFieldPickerMode.time,
-            onChanged: (DateTime? value) {
+
+        GestureDetector(
+          onTap: () async {
+            final pickedTime = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+
+              builder: (context, child) {
+                return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: _darkMode
+                  ? ColorScheme.dark(
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                      surface: cardColor,
+                      onSurface: textColor,
+                      tertiaryContainer: Colors.blue,      // ← AM/PM selected background
+                      onTertiaryContainer: Colors.white,   // ← AM/PM selected text
+                      secondaryContainer: Colors.blue,     // ← fallback
+                      onSecondaryContainer: Colors.white,
+                    )
+                  : ColorScheme.light(
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                      surface: cardColor,
+                      onSurface: textColor,
+                      tertiaryContainer: Colors.blue,      // ← AM/PM selected background
+                      onTertiaryContainer: Colors.white,   // ← AM/PM selected text
+                      secondaryContainer: Colors.blue,     // ← fallback
+                      onSecondaryContainer: Colors.white,
+                    ),
+
+                    inputDecorationTheme:  InputDecorationTheme(
+                      hintStyle: TextStyle(color: textColor),
+                      labelStyle: TextStyle(color: textColor),
+                    ),
+
+                    textTheme: TextTheme(
+                      bodyMedium: TextStyle(color: textColor),
+                    ),
+                   
+                  ),
+
+                  child: child!,
+                );
+              },
+            );
+
+            if (pickedTime != null) {
               setState(() {
-                _time = value != null
-                    ? TimeOfDay(hour: value.hour, minute: value.minute)
-                    : null;
+                _time = pickedTime;
               });
-            },
+            }
+          },
+
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+
+            child: Text(
+              _time == null
+                  ? 'Select time'
+                  : _time!.format(context),
+
+              style: TextStyle(color: textColor),
+            ),
           ),
         ),
       ],

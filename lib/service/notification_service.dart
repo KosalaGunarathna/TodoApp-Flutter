@@ -7,6 +7,7 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin plugin =
       FlutterLocalNotificationsPlugin();
 
+  // ── Init ──────────────────────────────────────────────────────────────────
   static Future<void> init() async {
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -16,32 +17,49 @@ class NotificationService {
 
     await plugin.initialize(settings);
 
-    // Ask notification permission (Android 13+)
     await plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
 
-    // Ask exact alarm permission
     await plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestExactAlarmsPermission();
   }
 
-  // ── Read reminderMinutes saved by NotificationPage ────────────────────────
+  // ── Read reminderMinutes from Hive ────────────────────────────────────────
   static int _getReminderMinutes() {
     try {
       final box = Hive.box('settings');
       return box.get('reminderMinutes', defaultValue: 60) as int;
     } catch (e) {
-      return 60; // fallback: 1 hour
+      return 60;
+    }
+  }
+
+  // ── Read any bool setting from Hive ───────────────────────────────────────
+  static bool _getBool(String key, bool defaultValue) {
+    try {
+      final box = Hive.box('settings');
+      return box.get(key, defaultValue: defaultValue) as bool;
+    } catch (e) {
+      return defaultValue;
     }
   }
 
   // ── Schedule a notification for a todo ───────────────────────────────────
   static Future<void> scheduleTodo(ToDo todo) async {
     if (todo.date == null || todo.time == null) return;
+
+    // Read all user settings
+    final bool notificationsEnabled = _getBool('notificationsEnabled', true);
+    final bool soundEnabled = _getBool('soundEnabled', true);
+    final bool vibrationEnabled = _getBool('vibrationEnabled', true);
+
+    
+    // Stop if notifications turned off
+    if (!notificationsEnabled) return;
 
     final taskDateTime = DateTime(
       todo.date!.year,
@@ -51,24 +69,22 @@ class NotificationService {
       todo.time!.minute,
     );
 
-    // Read the user's chosen reminder time from settings
     final reminderMinutes = _getReminderMinutes();
-    final reminderTime = taskDateTime.subtract(
-      Duration(minutes: reminderMinutes),
-    );
+    final reminderTime =
+        taskDateTime.subtract(Duration(minutes: reminderMinutes));
 
-    // Don't schedule if reminder time is already in the past
+    // Skip if reminder time already passed
     if (reminderTime.isBefore(DateTime.now())) {
       print('Skipping notification — reminder time is in the past');
       return;
-    }
+    } 
 
     await plugin.zonedSchedule(
       todo.id.hashCode,
       todo.todoText ?? 'Todo Reminder',
       _buildBody(reminderMinutes),
       tz.TZDateTime.from(reminderTime, tz.local),
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'todo_channel',
           'Todo Notifications',
@@ -76,6 +92,9 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
           icon: '@mipmap/launcher_icon',
+          playSound: soundEnabled,           // sound on/off
+          enableVibration: vibrationEnabled, // vibration on/off
+
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -84,12 +103,9 @@ class NotificationService {
     );
   }
 
-  // ── Reschedule all todos after user changes reminder time ─────────────────
+  // ── Reschedule all todos (called when settings change) ────────────────────
   static Future<void> rescheduleAll(List<ToDo> todos) async {
-    // Cancel all existing notifications first
     await plugin.cancelAll();
-
-    // Re-schedule each todo with the new reminder time
     for (final todo in todos) {
       await scheduleTodo(todo);
     }
@@ -100,7 +116,7 @@ class NotificationService {
     await plugin.cancel(todoId.hashCode);
   }
 
-  // ── Helper: build notification body text ─────────────────────────────────
+  // ── Build notification body text ──────────────────────────────────────────
   static String _buildBody(int minutes) {
     if (minutes < 60) return 'Due in $minutes minutes!';
     if (minutes == 60) return 'Due in 1 hour!';
