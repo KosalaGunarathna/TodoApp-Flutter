@@ -103,6 +103,7 @@ class _ToDoItemState extends State<ToDoItem> {
                 fontSize: 16,
                 color: textColor,
                 decoration: widget.todo.isDone ? TextDecoration.lineThrough : null,
+                decorationColor: textColor,
               ),
             ),
             const SizedBox(height: 5),
@@ -116,6 +117,7 @@ class _ToDoItemState extends State<ToDoItem> {
                       fontSize: 14,
                       color: subtitleColor,
                       decoration: widget.todo.isDone ? TextDecoration.lineThrough : null,
+                      decorationColor: textColor,
                     ),
                   ),
           ],
@@ -136,6 +138,7 @@ class _ToDoItemState extends State<ToDoItem> {
                         color: tdGrey,
                         decoration:
                             widget.todo.isDone ? TextDecoration.lineThrough : null,
+                        decorationColor: textColor,
                       ),
                     ),
 
@@ -151,13 +154,14 @@ class _ToDoItemState extends State<ToDoItem> {
                         color: tdGrey,
                         decoration:
                             widget.todo.isDone ? TextDecoration.lineThrough : null,
+                            decorationColor: textColor,
                       ),
                     )
             ],
           ),
         ),
 
-        // ✅ delet button
+        // ✅ delete button
         trailing: IconButton(
           icon: const Icon(Icons.delete, color: tdRed),
           onPressed: () {
