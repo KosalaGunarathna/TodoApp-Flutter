@@ -233,6 +233,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold),
+                                                textAlign: TextAlign.center,
                                           ),
                                           content: const Text(
                                               'Please enter a your task.'),

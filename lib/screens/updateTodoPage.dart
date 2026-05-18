@@ -245,9 +245,9 @@ class _UpdateTodoPageState extends State<UpdateTodoPage> {
                                           title: const Text(
                                             'Required',
                                             style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                                textAlign: TextAlign.center,
                                           ),
                                           content: const Text(
                                             'Please enter a your task',

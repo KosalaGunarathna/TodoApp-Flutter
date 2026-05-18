@@ -84,24 +84,13 @@ class _AboutState extends State<About> {
               ),
               child: Column(
                 children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2196F3),
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF2196F3).withOpacity(0.35),
-                          blurRadius: 18,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.white,
-                      size: 50,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(22),
+                    child: Image.asset(
+                      'assets/images/icon.png',
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -125,15 +114,11 @@ class _AboutState extends State<About> {
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: getBGColor(!_darkMode),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
                     child: Text(
                       'Stay organized, stay productive',
                       style: TextStyle(
                         fontSize: 13,
-                        color: subtitleColor,
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -200,62 +185,62 @@ class _AboutState extends State<About> {
             const SizedBox(height: 16),
 
             // Developer Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: getBGColor(!_darkMode),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.person_rounded,
-                      color: Color(0xFF2196F3),
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Developer',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: subtitleColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Your Name',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   width: double.infinity,
+            //   padding: const EdgeInsets.all(20),
+            //   decoration: BoxDecoration(
+            //     color: cardColor,
+            //     borderRadius: BorderRadius.circular(20),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
+            //         blurRadius: 10,
+            //         offset: const Offset(0, 2),
+            //       ),
+            //     ],
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       Container(
+            //         width: 50,
+            //         height: 50,
+            //         decoration: BoxDecoration(
+            //           color: getBGColor(!_darkMode),
+            //           borderRadius: BorderRadius.circular(14),
+            //         ),
+            //         child: const Icon(
+            //           Icons.person_rounded,
+            //           color: Color(0xFF2196F3),
+            //           size: 28,
+            //         ),
+            //       ),
+            //       const SizedBox(width: 14),
+            //       Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Text(
+            //             'Developer',
+            //             style: TextStyle(
+            //               fontSize: 12,
+            //               color: subtitleColor,
+            //             ),
+            //           ),
+            //           const SizedBox(height: 2),
+            //           Text(
+            //             'Your Name',
+            //             style: TextStyle(
+            //               fontSize: 16,
+            //               fontWeight: FontWeight.bold,
+            //               color: textColor,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
-            const SizedBox(height: 30),
+            // const SizedBox(height: 30),
 
             // Footer
             Text(

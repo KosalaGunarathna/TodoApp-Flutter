@@ -166,30 +166,49 @@ class _ToDoItemState extends State<ToDoItem> {
           icon: const Icon(Icons.delete, color: tdRed),
           onPressed: () {
             showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Delete Todo'),
-                    content: const Text(
-                        'Are you sure you want to delete this todo?'),
-                    actions: [
+              context: context,
+              builder: (ctx) => AlertDialog(
+                backgroundColor: cardColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                title: Text(
+                  'Delete Task',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                    color: textColor,
+                  ),
+                ),
+                content: Text(
+                  'Are you sure you want to delete this Task?',
+                  // textAlign: TextAlign.center,
+                  style: TextStyle(color: textColor),
+                ),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(ctx).pop();
                         },
                         child: const Text('Cancel'),
                       ),
                       TextButton(
                         onPressed: () {
                           widget.onDeleteItem(widget.todo.id);
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(ctx).pop();
                         },
-                        child: const Text('Delete',
-                            style: TextStyle(color: tdRed)),
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(color: tdRed),
+                        ),
                       ),
                     ],
-                  );
-                });
+                  ),
+                ],
+              ),
+            );
           },
         ),
       ),

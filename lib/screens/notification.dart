@@ -121,20 +121,22 @@ class _NotificationPageState extends State<NotificationPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
-            'Custom Reminder Time',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 17,
-              color: textColor,
+              'Custom Reminder Time',
+              textAlign: TextAlign.center, // 👈 add this
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+                color: textColor,
+              ),
             ),
-          ),
+          
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Set how long before the task you want to be reminded.',
                 style: TextStyle(color: subtitleColor, fontSize: 13),
-                textAlign: TextAlign.center,
+                // textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
 
@@ -426,7 +428,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                 width: 42,
                                 height: 42,
                                 decoration: BoxDecoration(
-                                  color: isSelected ? Colors.blue : Colors.grey,
+                                  color: isSelected ? Colors.blue :const Color.fromARGB(255, 201, 216, 229),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(
@@ -505,7 +507,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       height: 42,
                       decoration: BoxDecoration(
                         color:
-                            _isCustom ? const Color(0xFF2196F3) : Colors.grey,
+                            _isCustom ? const Color(0xFF2196F3) : const Color.fromARGB(255, 201, 216, 229),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
