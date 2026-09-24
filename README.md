@@ -37,11 +37,11 @@ This app allows users to create, edit, and delete tasks with persistent storage 
       Update Task
     </td>
     <td align="center">
-      <img width="250" src="https://github.com/user-attachments/assets/a1330b26-d6aa-4ebe-8650-fa3b1480c97d" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/3eb981ae-4017-4d03-8a1a-3f83759182df" /><br>
       Delete Task
     </td>
     <td align="center">
-      <img width="250" src="https://github.com/user-attachments/assets/3eb981ae-4017-4d03-8a1a-3f83759182df" /><br>
+      <img width="250" src="https://github.com/user-attachments/assets/56d7e8d3-d77a-44fe-af3f-bd654fe18b50"  /><br>
       Popup mesage
     </td>
   </tr>
@@ -49,6 +49,7 @@ This app allows users to create, edit, and delete tasks with persistent storage 
 
 
 ---
+
 
 ## 🛠️ Installation & Setup
 
@@ -65,3 +66,20 @@ flutter packages pub run build_runner build
 ### 4. Run the app
 flutter run
 
+## AdMob setup
+
+1. Copy `.env.example` to `.env`.
+2. Enter your production AdMob App ID and banner Ad Unit ID in `.env`.
+3. Run the app or create a release build:
+
+```powershell
+flutter run
+flutter build appbundle
+```
+
+The test IDs in `.env.example` show Google's test banner. Replace both IDs in
+your local `.env` with your AdMob IDs to show real ads.
+
+The `.env` file is Git-ignored. AdMob IDs are identifiers rather than secrets,
+but keeping them out of the repository makes it easy to use separate IDs per
+environment.

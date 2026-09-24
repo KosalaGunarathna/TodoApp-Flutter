@@ -31,4 +31,3 @@ class ToDo extends HiveObject {
   @HiveField(5)
   TimeOfDay? time;
 }
-
