@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:todoapp/color_theam/color.dart';
+import 'package:todoapp/theme/app_colors.dart';
 
 class About extends StatefulWidget {
   const About({super.key});
@@ -31,7 +31,7 @@ class _AboutState extends State<About> {
         _darkMode = _settingsBox.get('darkMode', defaultValue: false);
       });
     } catch (e) {
-      print('Error loading settings: $e');
+      debugPrint('Error loading settings: $e');
     }
   }
 
@@ -76,7 +76,9 @@ class _AboutState extends State<About> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
+                    color: Colors.black.withValues(
+                      alpha: _darkMode ? 0.3 : 0.05,
+                    ),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -84,24 +86,13 @@ class _AboutState extends State<About> {
               ),
               child: Column(
                 children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2196F3),
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF2196F3).withOpacity(0.35),
-                          blurRadius: 18,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.white,
-                      size: 50,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(22),
+                    child: Image.asset(
+                      'assets/images/icon.png',
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -116,25 +107,17 @@ class _AboutState extends State<About> {
                   const SizedBox(height: 6),
                   Text(
                     'Version 1.0.0',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: subtitleColor,
-                    ),
+                    style: TextStyle(fontSize: 14, color: subtitleColor),
                   ),
                   const SizedBox(height: 12),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: getBGColor(!_darkMode),
-                      borderRadius: BorderRadius.circular(20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
                     child: Text(
                       'Stay organized, stay productive',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: subtitleColor,
-                      ),
+                      style: TextStyle(fontSize: 13, color: textColor),
                     ),
                   ),
                 ],
@@ -146,8 +129,7 @@ class _AboutState extends State<About> {
             // Description Card
             _infoCard(
               title: 'About This App',
-              content:
-                  'Todo App helps you manage your daily tasks with ease. Set reminders, organize your to-dos, and never miss an important task again. Simple, fast, and reliable.',
+              content: 'Todo App helps you manage your daily tasks with ease. Set reminders, organize your to-dos, and never miss an important task again. Simple, fast, and reliable.',
               cardColor: cardColor,
               textColor: textColor,
               subtitleColor: subtitleColor,
@@ -165,7 +147,9 @@ class _AboutState extends State<About> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
+                    color: Colors.black.withValues(
+                      alpha: _darkMode ? 0.3 : 0.05,
+                    ),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -183,16 +167,31 @@ class _AboutState extends State<About> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  _featureItem(Icons.add_task_rounded, 'Create & manage todos',
-                      textColor),
-                  _featureItem(Icons.notifications_active_rounded,
-                      'Smart reminders before due time', textColor),
-                  _featureItem(Icons.search_rounded,
-                      'Search through your tasks', textColor),
-                  _featureItem(Icons.storage_rounded, 'Offline local storage',
-                      textColor),
-                  _featureItem(Icons.timer_rounded,
-                      'Custom notification timing', textColor),
+                  _featureItem(
+                    Icons.add_task_rounded,
+                    'Create & manage todos',
+                    textColor,
+                  ),
+                  _featureItem(
+                    Icons.notifications_active_rounded,
+                    'Smart reminders before due time',
+                    textColor,
+                  ),
+                  _featureItem(
+                    Icons.search_rounded,
+                    'Search through your tasks',
+                    textColor,
+                  ),
+                  _featureItem(
+                    Icons.storage_rounded,
+                    'Offline local storage',
+                    textColor,
+                  ),
+                  _featureItem(
+                    Icons.timer_rounded,
+                    'Custom notification timing',
+                    textColor,
+                  ),
                 ],
               ),
             ),
@@ -200,70 +199,67 @@ class _AboutState extends State<About> {
             const SizedBox(height: 16),
 
             // Developer Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: getBGColor(!_darkMode),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.person_rounded,
-                      color: Color(0xFF2196F3),
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Developer',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: subtitleColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Your Name',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   width: double.infinity,
+            //   padding: const EdgeInsets.all(20),
+            //   decoration: BoxDecoration(
+            //     color: cardColor,
+            //     borderRadius: BorderRadius.circular(20),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.05),
+            //         blurRadius: 10,
+            //         offset: const Offset(0, 2),
+            //       ),
+            //     ],
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       Container(
+            //         width: 50,
+            //         height: 50,
+            //         decoration: BoxDecoration(
+            //           color: getBGColor(!_darkMode),
+            //           borderRadius: BorderRadius.circular(14),
+            //         ),
+            //         child: const Icon(
+            //           Icons.person_rounded,
+            //           color: Color(0xFF2196F3),
+            //           size: 28,
+            //         ),
+            //       ),
+            //       const SizedBox(width: 14),
+            //       Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Text(
+            //             'Developer',
+            //             style: TextStyle(
+            //               fontSize: 12,
+            //               color: subtitleColor,
+            //             ),
+            //           ),
+            //           const SizedBox(height: 2),
+            //           Text(
+            //             'Your Name',
+            //             style: TextStyle(
+            //               fontSize: 16,
+            //               fontWeight: FontWeight.bold,
+            //               color: textColor,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
-            const SizedBox(height: 30),
+            // const SizedBox(height: 30),
 
             // Footer
             Text(
               '© 2026 Todo App. All rights reserved.',
-              style: TextStyle(
-                fontSize: 12,
-                color: subtitleColor,
-              ),
+              style: TextStyle(fontSize: 12, color: subtitleColor),
             ),
             const SizedBox(height: 20),
           ],
@@ -288,7 +284,7 @@ class _AboutState extends State<About> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(shadowDarkMode ? 0.3 : 0.05),
+            color: Colors.black.withValues(alpha: shadowDarkMode ? 0.3 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -308,11 +304,7 @@ class _AboutState extends State<About> {
           const SizedBox(height: 10),
           Text(
             content,
-            style: TextStyle(
-              fontSize: 14,
-              color: subtitleColor,
-              height: 1.5,
-            ),
+            style: TextStyle(fontSize: 14, color: subtitleColor, height: 1.5),
           ),
         ],
       ),
@@ -334,10 +326,7 @@ class _AboutState extends State<About> {
             child: Icon(icon, color: const Color(0xFF2196F3), size: 20),
           ),
           const SizedBox(width: 12),
-          Text(
-            text,
-            style: TextStyle(fontSize: 14, color: textColor),
-          ),
+          Text(text, style: TextStyle(fontSize: 14, color: textColor)),
         ],
       ),
     );

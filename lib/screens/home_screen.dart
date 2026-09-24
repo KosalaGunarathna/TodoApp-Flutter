@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:todoapp/color_theam/color.dart';
-import 'package:todoapp/service/service.dart';
-import 'package:todoapp/widgets/drawer.dart';
-import '../widgets/todo_item.dart';
-import '../model/todo.dart';
+import 'package:todoapp/models/todo.dart';
+import 'package:todoapp/services/todo_service.dart';
+import 'package:todoapp/theme/app_colors.dart';
+import 'package:todoapp/widgets/admob_banner_widget.dart';
+import 'package:todoapp/widgets/app_drawer.dart';
+import 'package:todoapp/widgets/todo_item.dart';
 
 class Home extends StatefulWidget {
-  Home({super.key});
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -40,11 +41,13 @@ class _HomeState extends State<Home> {
       }
       setState(() {
         _darkMode = _settingsBox.get('darkMode', defaultValue: false);
-        notificationsEnabled =
-            _settingsBox.get('notificationsEnabled', defaultValue: true);
+        notificationsEnabled = _settingsBox.get(
+          'notificationsEnabled',
+          defaultValue: true,
+        );
       });
     } catch (e) {
-      print('Error loading settings: $e');
+      debugPrint('Error loading settings: $e');
     }
   }
 
@@ -70,19 +73,23 @@ class _HomeState extends State<Home> {
       appBar: _buildAppBar(isTablet, bgColor, textColor),
       body: Column(
         children: [
-          // ── Scrollable list with search + label as header ─────────────
+          // Todo list.
           Expanded(
             child: CustomScrollView(
               slivers: [
                 SliverPadding(
                   padding: EdgeInsets.fromLTRB(
-                      horizontalPadding, 15, horizontalPadding, 0),
+                    horizontalPadding,
+                    15,
+                    horizontalPadding,
+                    0,
+                  ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      // Search box — scrolls with the list
+                      // Search field.
                       _buildSearchBox(textColor),
 
-                      // "All Todos" label — scrolls with the list
+                      // Section label.
                       Padding(
                         padding: const EdgeInsets.only(top: 6, bottom: 10),
                         child: Text(
@@ -101,7 +108,11 @@ class _HomeState extends State<Home> {
                 // Todo items
                 SliverPadding(
                   padding: EdgeInsets.fromLTRB(
-                      horizontalPadding, 0, horizontalPadding, 12),
+                    horizontalPadding,
+                    0,
+                    horizontalPadding,
+                    12,
+                  ),
                   sliver: SliverList.builder(
                     itemCount: _foundTodo.length,
                     itemBuilder: (context, index) {
@@ -119,11 +130,15 @@ class _HomeState extends State<Home> {
             ),
           ),
 
-          // ── Add New Todo bar ─────────────────────────────────────────────
+          // Add todo bar.
           Container(
             color: bgColor,
             padding: EdgeInsets.fromLTRB(
-                horizontalPadding, 8, horizontalPadding, 16),
+              horizontalPadding,
+              8,
+              horizontalPadding,
+              16,
+            ),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -132,7 +147,9 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(_darkMode ? 0.3 : 0.10),
+                    color: Colors.black.withValues(
+                      alpha: _darkMode ? 0.3 : 0.10,
+                    ),
                     blurRadius: 20,
                     spreadRadius: 2,
                     offset: const Offset(0, 6),
@@ -146,11 +163,14 @@ class _HomeState extends State<Home> {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.12),
+                      color: Colors.blue.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.add_task_rounded,
-                        color: Colors.blue, size: 22),
+                    child: const Icon(
+                      Icons.add_task_rounded,
+                      color: Colors.blue,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(width: 14),
 
@@ -185,16 +205,22 @@ class _HomeState extends State<Home> {
                     onPressed: () async {
                       final result = await context.push('/add');
                       if (result != null && result is Map) {
-                        print('Add page returned: $result');
+                        debugPrint('Add page returned: $result');
                         final todoText = result['todoText'] as String? ?? '';
                         final todoNote = result['todoNote'] as String? ?? '';
                         final date = result['date'] as DateTime?;
                         final time = result['time'] as TimeOfDay?;
                         if (todoText.isNotEmpty) {
                           await todoService.addTodo(
-                              todoText, todoNote, date, time);
+                            todoText,
+                            todoNote,
+                            date,
+                            time,
+                          );
                           try {
-                            print('After add, box length: ${todoBox.length}');
+                            debugPrint(
+                              'After add, box length: ${todoBox.length}',
+                            );
                           } catch (_) {}
                           _loadTodos();
                         }
@@ -204,9 +230,12 @@ class _HomeState extends State<Home> {
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       elevation: 0,
                       textStyle: TextStyle(
                         fontSize: isTablet ? 15 : 14,
@@ -219,6 +248,9 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
+
+          SizedBox(width: screenWidth, child: const AdmobBannerWidget()),
+          SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
       ),
     );
@@ -242,12 +274,17 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _updateTodoItem(String updatedText, String updatedNote, DateTime? date,
-      TimeOfDay? time, String id) async {
+  void _updateTodoItem(
+    String updatedText,
+    String updatedNote,
+    DateTime? date,
+    TimeOfDay? time,
+    String id,
+  ) async {
     await todoService.updateTodo(id, updatedText, updatedNote, date, time);
     if (mounted) {
       setState(() {
-        _foundTodo = todoService.getAllTodos(); // refresh list directly here
+        _foundTodo = todoService.getAllTodos();
       });
     }
   }
@@ -262,7 +299,7 @@ class _HomeState extends State<Home> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(_darkMode ? 0.3 : 0.5),
+            color: Colors.grey.withValues(alpha: _darkMode ? 0.3 : 0.5),
             spreadRadius: 2,
             blurRadius: 7,
             offset: const Offset(0, 3),
@@ -276,15 +313,12 @@ class _HomeState extends State<Home> {
           Expanded(
             child: TextField(
               onChanged: _searchTodo,
-              style: TextStyle(
-                color: textColor,
-                fontSize: isTablet ? 16 : 14,
-              ),
+              style: TextStyle(color: textColor, fontSize: isTablet ? 16 : 14),
               decoration: InputDecoration(
                 hintText: 'Search',
                 border: InputBorder.none,
                 hintStyle: TextStyle(
-                  color: textColor.withOpacity(0.5),
+                  color: textColor.withValues(alpha: 0.5),
                   fontSize: isTablet ? 16 : 14,
                 ),
               ),
@@ -304,7 +338,8 @@ class _HomeState extends State<Home> {
       // LEFT ICON
       leading: Builder(
         builder: (context) => IconButton(
-          icon: Icon(Icons.menu, color: textColor),
+          icon: const Icon(Icons.menu_rounded, size: 26),
+          color: textColor,
           onPressed: () => Scaffold.of(context).openDrawer(),
         ),
       ),
@@ -321,14 +356,18 @@ class _HomeState extends State<Home> {
 
       // RIGHT SIDE
       actions: [
-        IconButton(
-          onPressed: () => context.go('/notifications'),
-          icon: Icon(
-            notificationsEnabled
-                ? Icons.notifications
-                : Icons.notifications_off,
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: IconButton(
+            icon: Icon(
+              notificationsEnabled
+                  ? Icons.notifications_rounded
+                  : Icons.notifications_off_rounded,
+              size: 26,
+            ),
+            color: notificationsEnabled ? textColor : Colors.grey,
+            onPressed: () => context.go('/notifications'),
           ),
-          color: textColor,
         ),
       ],
     );

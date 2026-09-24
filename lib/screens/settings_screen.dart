@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:todoapp/color_theam/color.dart';
-import 'package:todoapp/model/todo.dart';
-import 'package:todoapp/service/notification_service.dart';
-import 'package:todoapp/service/service.dart';
+import 'package:todoapp/models/todo.dart';
+import 'package:todoapp/services/notification_service.dart';
+import 'package:todoapp/services/todo_service.dart';
+import 'package:todoapp/theme/app_colors.dart';
 
 class Setting extends StatefulWidget {
   const Setting({super.key});
@@ -17,7 +17,6 @@ class _SettingState extends State<Setting> {
   late Box _settingsBox;
   bool _notificationsEnabled = true;
   bool _darkMode = false;
-  
 
   @override
   void initState() {
@@ -33,12 +32,14 @@ class _SettingState extends State<Setting> {
         _settingsBox = Hive.box('settings');
       }
       setState(() {
-        _notificationsEnabled =
-            _settingsBox.get('notificationsEnabled', defaultValue: true);
+        _notificationsEnabled = _settingsBox.get(
+          'notificationsEnabled',
+          defaultValue: true,
+        );
         _darkMode = _settingsBox.get('darkMode', defaultValue: false);
       });
     } catch (e) {
-      print('Error loading settings: $e');
+      debugPrint('Error loading settings: $e');
     }
   }
 
@@ -51,7 +52,7 @@ class _SettingState extends State<Setting> {
     try {
       await _settingsBox.put(key, value);
     } catch (e) {
-      print('Error saving setting: $e');
+      debugPrint('Error saving setting: $e');
     }
   }
 
@@ -104,8 +105,9 @@ class _SettingState extends State<Setting> {
                       : Icons.light_mode_rounded,
                   iconColor: _darkMode ? tdIconDarkMode : tdIconLightMode,
                   title: 'Dark Mode',
-                  subtitle:
-                      _darkMode ? 'Dark theme is on' : 'Light theme is on',
+                  subtitle: _darkMode
+                      ? 'Dark theme is on'
+                      : 'Light theme is on',
                   value: _darkMode,
                   textColor: textColor,
                   subtitleColor: subtitleColor,
@@ -140,13 +142,17 @@ class _SettingState extends State<Setting> {
 
                     final todos = Hive.box<ToDo>('todos').values.toList();
                     if (val) {
-                      await NotificationService.rescheduleAll(todos); // turn ON → reschedule
+                      await NotificationService.requestPermission();
+                      await NotificationService.rescheduleAll(
+                        todos,
+                      ); // Reschedule reminders.
                     } else {
-                      await NotificationService.plugin.cancelAll();   // turn OFF → cancel all
+                      await NotificationService.plugin
+                          .cancelAll(); // Cancel all reminders.
                     }
                   },
                 ),
-                _divider(dividerColor),              
+                _divider(dividerColor),
               ],
             ),
 
@@ -170,6 +176,16 @@ class _SettingState extends State<Setting> {
                 ),
                 _divider(dividerColor),
                 _navigationItem(
+                  icon: Icons.privacy_tip_rounded,
+                  iconColor: tdIconInfo,
+                  title: 'Privacy Policy',
+                  subtitle: 'How app and ad data is handled',
+                  textColor: textColor,
+                  subtitleColor: subtitleColor,
+                  onTap: () => context.go('/privacy'),
+                ),
+                _divider(dividerColor),
+                _navigationItem(
                   icon: Icons.delete_sweep_rounded,
                   iconColor: tdIconDelete,
                   title: 'Clear All Tasks',
@@ -177,7 +193,12 @@ class _SettingState extends State<Setting> {
                   textColor: textColor,
                   subtitleColor: subtitleColor,
                   onTap: () => _showClearDialog(
-                      context, bgColor, cardColor, textColor, subtitleColor),
+                    context,
+                    bgColor,
+                    cardColor,
+                    textColor,
+                    subtitleColor,
+                  ),
                 ),
               ],
             ),
@@ -189,8 +210,13 @@ class _SettingState extends State<Setting> {
     );
   }
 
-  void _showClearDialog(BuildContext context, Color bgColor, Color cardColor,
-      Color textColor, Color subtitleColor) {
+  void _showClearDialog(
+    BuildContext context,
+    Color bgColor,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -209,22 +235,26 @@ class _SettingState extends State<Setting> {
             onPressed: () {
               Navigator.of(ctx).pop();
             },
-            child: const Text('Cancel',
-                style: TextStyle(color: tdIconNotifications)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: tdIconNotifications),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: tdIconDelete,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () async {
               try {
                 final todoService = TodoService(Hive.box<ToDo>('todos'));
                 await todoService.deleteAllTodos();
-                Navigator.of(ctx).pop();                      // close dialog
+                if (!ctx.mounted) return;
+                Navigator.of(ctx).pop(); // Close the dialog.
               } catch (e) {
-                print('Error clearing todos: $e');
+                debugPrint('Error clearing todos: $e');
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.white)),
@@ -257,7 +287,7 @@ class _SettingState extends State<Setting> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(shadowDarkMode ? 0.3 : 0.05),
+            color: Colors.black.withValues(alpha: shadowDarkMode ? 0.3 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -285,7 +315,7 @@ class _SettingState extends State<Setting> {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.15),
+              color: iconColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 22),
@@ -313,7 +343,7 @@ class _SettingState extends State<Setting> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: tdIconNotifications,
+            activeThumbColor: tdIconNotifications,
           ),
         ],
       ),
@@ -340,7 +370,7 @@ class _SettingState extends State<Setting> {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.15),
+                color: iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: iconColor, size: 22),
@@ -374,9 +404,5 @@ class _SettingState extends State<Setting> {
 
   Widget _divider(Color dividerColor) {
     return Divider(height: 1, indent: 72, color: dividerColor);
-  } 
-
-  
-
-
+  }
 }
